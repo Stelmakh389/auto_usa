@@ -1,0 +1,160 @@
+{% extends "car_site/base.html" %}
+
+{% load static %}
+{% block content %}
+    <main class="container-fluid">
+        <div class="title_search row justify-content-between align-items-center">
+            <form class="box_search col form" role="search" action="{% url 'usa_list' %}" method="get">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input form_search rounded-3"
+                       placeholder="Поиск по таблице..." name="q">
+            </form>
+        </div>
+
+        <div class="row custom_table rounded-3">
+            <table class="table">
+                <thead class="table table_head">
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="second-col" scope="col">Марка и модель</th>
+                    <th scope="col">VIN номер</th>
+                    <th scope="col">Аукцион</th>
+                    <th scope="col">Номер лота</th>
+                    <th scope="col">Название учетки</th>
+                    <th scope="col">Дата покупки</th>
+                    <th scope="col">Дата доставки на склад</th>
+                    <th scope="col">Дата загрузки в контейнер</th>
+                    <th scope="col">Порт отправки</th>
+                    <th scope="col">Дата прибытия в Литву</th>
+                    <th scope="col">Дата открытия контейнера</th>
+                    <th scope="col">Дата прибытия в Беларусь</th>
+                    <th scope="col">Дата прибытия в Москву</th>
+                    <th scope="col">Номер контейнера</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Фото</th>
+                    <th scope="col">Квитанция</th>
+                    <th scope="col">Оплата на аукцион</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in usacard_list %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <td class="fw second-col">
+                            <a href="{% url 'usa_card' entry.id %}">
+                                {{ entry.model }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ entry.vin_number }}
+                        </td>
+                        <td>
+                            {{ entry.auction_data.auction.name }}
+                        </td>
+                        <td>
+                            <a href="{{ entry.auction_data.lot_link }}">{{ entry.auction_data.lot_number }}</a>
+                        </td>
+                        <td>
+                            {{ entry.auction_data.user_name }}
+                        </td>
+                        <td>
+                            {{ entry.auction_data.pay_date }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.delivery_storage_date }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.container_load_date }}
+                        </td>
+                        <td>
+                            {{ entry.payment.port }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.arrival_date_litva }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.open_container_date }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.belarus_date }}
+                        </td>
+                        <td>
+                            {{ entry.tracking.moscow_date }}
+                        </td>
+                        <td>
+                            {{ entry.auction_data.container_number }}
+                        </td>
+                        <td>
+                            {% if entry.title %}
+                                <a href="{% url 'usa_card' entry.id %}">
+                                    <img src="{% static 'img/title.svg' %}" alt="title">
+                                </a>
+
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'usa_card' entry.id %}">
+                                {% if entry.photos.count %}
+                                    <img src="{% static 'img/photo.svg' %}" alt="title">
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            {% if entry.payment_files.count %}
+
+                                <a href="{% url 'usa_card' entry.id %}"><img src="{% static 'img/kvit.svg' %}"
+                                                                             alt="title"></a>
+                            {% else %}
+                                <a class="add_kvit" href="{% url 'usa_card' entry.id %}"><span>+</span></a>
+                            {% endif %}
+                        </td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.payment.car_auct_price }} $</p>
+                                {% if entry.payment.payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+            <nav class="row pag" aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                    {% for page_number in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_number == page_obj.number %}active{% endif %}">
+                            <a href="?page={{ page_number }}" class="page-link">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </main>
+{% endblock %}

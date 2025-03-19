@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "80:8000"
+    volumes:
+      - ./car_site:/app/car_site
+      - ./car_auction:/app/car_auction
+      - ./templates:/app/templates
+      - ./media:/media
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    depends_on:
+      - postgres
+
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - .docker_data/postgres:/var/lib/postgresql/data
+      - ./data/:/tmp/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  worker_data:

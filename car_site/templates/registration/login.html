@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+    {% load django_bootstrap5 %}
+    {% load static %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=l, shrink-to-fit=no">
+    <title>{% block title %}Вход{% endblock %} - America Car Trans</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+{% block content %}
+    <main class="log vh-100 container-fluid">
+        <div class="row vh-100 form-bg align-items-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col login_form">
+                        <div class="form-container rounded-3">
+                            <h3 class="title">Вход</h3>
+                            {% if form.errors %}
+                                <p>Неправильный логин или пароль.</p>
+                            {% endif %}
+
+
+                            {% if user.is_authenticated %}
+                                <p>Вы уже выполнили вход.</p>
+                            {% else %}
+                                <form class="form-horizontal" method="post" action="{% url 'login' %}">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="Логин" name="username">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" class="form-control" placeholder="Пароль"
+                                               name="password">
+                                    </div>
+                                    <button class="btn signin">Войти</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+</body>
+</html>

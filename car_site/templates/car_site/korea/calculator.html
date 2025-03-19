@@ -1,0 +1,1355 @@
+{% extends "car_site/base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <style>
+    #komissiya{
+        font-weight:700;
+    }
+        body{
+            background: #F8F9FC;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .calculator_block{
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            justify-content: center;
+            align-items: center;
+           
+        }
+        .input_block{
+            display: flex;
+            justify-content: center;
+            border-radius: 20px;
+            width: 470px;
+            flex-direction: column;
+            background: white;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            z-index: 1;
+            height: 732px;
+        }
+        .result_block{
+            display: flex;
+            border-radius: 0 20px 20px 0;
+            width: 470px;
+            height: auto;
+            margin-left: -5px;
+            border: 1px solid #05155E;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 0;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .row_block{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .input_block .row_block p{
+            font-size: 16px;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        .row_block p{
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .input_block select, .input_block input{
+            width: 200px;
+            height: 35px;
+            padding-left: 5px;
+            margin: 0;
+            border-radius: 10px;
+            border: 1px solid #474747;
+        }
+        .button_result{
+            margin-top: 10px;
+            background: #FFF500;
+            border: none;
+            height: 50px;
+            cursor: pointer;
+            width: 100%;
+            color: black;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+        .button_print{
+            margin-top: 10px;
+            background: #05155E;
+            border: none;
+            height: 40px;
+            cursor: pointer;
+            width: 100%;
+            color: white;
+            bottom: 0px;
+            left: -40px;
+            margin: 20px;
+            position: absolute;
+            font-size: 18px;
+            font-weight: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+        .button_result:hover{
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        }
+        .row_block .zag{
+            font-size: 22px;
+            text-align: center;
+            margin: 0 auto;
+            font-weight: 700;
+        }
+        .type_calculate{
+            display: block;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .checkbox_block{
+            display: flex;
+            width: 200px;
+        }
+        .checkbox_block input{
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .checkbox_block label{
+            margin-right:10px;
+            font-size: 14px;
+        }
+        .result_label{
+            font-weight: 700;
+        }
+        .USD_block{
+            display: flex;
+        }
+        .kurs{
+            margin-right: 10px;
+            font-weight: 700 ;
+        }
+        #itog{
+            margin-bottom: 50px!important;
+        }
+        @media screen and (max-width:890px) {
+            .calculator_block{
+                flex-direction: column;
+            }
+            .input_block{
+                height: auto;
+            }
+            .result_block{
+                height: auto;
+                border-radius: 20px;
+                margin-top: 20px;
+            }
+            .button_print{
+                position: relative;
+                left: auto;
+                right: auto;
+                margin: 0;
+                width: auto;
+            }
+        }
+        @media screen and (max-width:500px) {
+            .input_block, .result_block{
+                width: 100%;
+            }
+            .input_block .row_block p, .result_block .row_block p{
+                font-size: 14px;
+            }
+            .type_calculate{
+                font-size: 30px;
+            }
+            .row_block .zag{
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    <a id="kopirovat" class="kopirovat" href="#">Копировать данные</a>
+    <h1 class="type_calculate">Калькулятор расчета авто из США</h1>
+    <div class="USD_block"><p class="kurs">Курс Доллара:</p><p id="USD" class="USD"></p></div>
+    <div class="calculator_block" id="calculator_block">
+        <div class="input_block">
+            <div class="row_block">
+                <h2 class="zag">Заполняемые данные</h2>
+            </div>
+            <div class="row_block">
+                <p>Цена авто</p>
+                <input type="number" id="price_car" placeholder="Цена авто в $">
+            </div>
+            <div class="row_block">
+                <p>Тип техники</p>
+                <select name="type_cars" id="type_cars">
+                    <option value="1">Седан</option>
+                    <option value="5">Кроссовер</option>
+                    <option value="2">Внедорожник</option>
+                    <option value="6">Пикап</option>
+                    <option value="7">Габаритный авто</option>
+                    <option value="3">Квадроциклы</option>
+                    <option value="4">Мотоциклы</option>
+                    <option value="8">Снегоходы</option>
+                </select>
+            </div>
+            <div class="row_block">
+                <p>Тип двигателя</p>
+                <select name="type_engine" id="type_engine">
+                    <option value="1">Бензин / Дизель</option>
+                    <option value="2">Электро</option>
+                    <option value="3">Гибрид</option>
+                </select>
+            </div>
+            <div id="engine" class="row_block">
+                <p>Объем двигателя в л.</p>
+                <select name="engine_capacity" id="engine_capacity">
+                    <option value="1000">1.0</option>
+                    <option value="1100">1.1</option>
+                    <option value="1200">1.2</option>
+                    <option value="1300">1.3</option>
+                    <option value="1400">1.4</option>
+                    <option value="1500">1.5</option>
+                    <option value="1600">1.6</option>
+                    <option value="1900">1.9</option>
+                    <option value="2000">2.0</option>
+                    <option value="2200">2.2</option>
+                    <option value="2300">2.3</option>
+                    <option value="2400">2.4</option>
+                    <option value="2500">2.5</option>
+                    <option value="2800">2.8</option>
+                    <option value="2900">2.9</option>
+                    <option value="3000">3.0</option>
+                    <option value="3200">3.2</option>
+                    <option value="3500">3.5</option>
+                    <option value="3600">3.6</option>
+                    <option value="4000">4.0</option>
+                    <option value="4200">4.2</option>
+                    <option value="4400">4.4</option>
+                    <option value="5000">5.0</option>
+                    <option value="5200">5.2</option>
+                    <option value="5300">5.3</option>
+                    <option value="5500">5.5</option>
+                    <option value="5700">5.7</option>
+                    <option value="6000">6.0</option>
+                    <option value="6200">6.2</option>
+                    <option value="6300">6.3</option>
+                    <option value="6400">6.4</option>
+                </select>
+                <select id="sneg">
+                    <option value="1">до 300 кубиков</option>
+                    <option value="2">От 300 кубиков</option>
+                </select>
+                <select id="moto">
+                    <option value="1">250-800 кубиков</option>
+                    <option value="2">От 800 кубиков</option>
+                </select>
+            </div>
+            <div id="horse_moto" class="row_block">
+                <p>Кол-во л. сил</p>
+                <input type="number" id="horse" placeholder="Кол-во л. сил">
+            </div>
+            <div class="row_block">
+                <p>Возраст техники</p>
+                <select name="age_of_the_car" id="age_of_the_car">
+                    <option value="1">0-3 года</option>
+                    <option value="2">3-5 года</option>
+                    <option value="3">5-7 года</option>
+                </select>
+            </div>
+            <div class="row_block" id="weight_of_auto_block">
+                <p>Масса техники</p>
+                <select name="weight_of_auto" id="weight_of_auto">
+                    <option value="1">до 3,5 тонн</option>
+                    <option value="2">более 3,5 тонн</option>
+                </select>
+            </div>
+            <div class="row_block">
+                <p>Выберите аукцион</p>
+                <select name="aukcion" id="aukcion">
+                    <option value="1">Copart</option>
+                    <option value="2">Sublot Copart</option>
+                    <option value="3">|AA|</option>
+                    <option value="4">|AA| Sublot</option>
+                    <option value="5">Manheim</option>
+                </select>
+            </div>
+            <div class="row_block" id="deliver_port">
+                <p>Доставка до порта</p>
+                <input type="number" id="manheim_deliver" placeholder="Цена доставки до порта">
+            </div>
+            <div class="row_block" id="auk_sbor">
+                <p>Аукционный сбор</p>
+                <input type="number" id="auk_sbor_value" placeholder="Аукционный сбор">
+            </div>
+            <div id="copart_cont" class="row_block">
+                <p>Площадки Copart</p>
+                <select name="place_copart" id="place_copart">
+                    <option value=1>AL MOBILE</option>
+                    <option value=2>AL BIRMINGHAM</option>
+                    <option value=3>AL MONTGOMERY</option>
+                    <option value=4>AL DOTHAN</option>
+                    <option value=5>AL TANNER</option>
+                    <option value=6>AL MOBILE SOUTH</option>
+                    <option value=7>AL BIRMINGHAM AL SUBLOT</option>
+                    <option value=8>AR LITTLE ROCK</option>
+                    <option value=9>AR FAYETTEVILLE</option>
+                    <option value=10>AZ PHOENIX</option>
+                    <option value=11>AZ PHOENIX NORTH</option>
+                    <option value=12>AZ TUCSON</option>
+                    <option value=13>CA ADELANTO</option>
+                    <option value=14>CA REDDING</option>
+                    <option value=15>CA ANTELOPE</option>
+                    <option value=16>CA BAKERSFIELD</option>
+                    <option value=17>CA SAN BERNARDINO</option>
+                    <option value=18>CA FRESNO</option>
+                    <option value=19>CA SACRAMENTO CA SUBLOT</option>
+                    <option value=20>CA HAYWARD</option>
+                    <option value=21>CA LANCASTER CA SUBLOT</option>
+                    <option value=22>CA LOS ANGELES</option>
+                    <option value=23>CA MARTINEZ</option>
+                    <option value=24>CA MENTONE</option>
+                    <option value=25>CA RANCHO CUCAMONGA</option>
+                    <option value=26>CA SACRAMENTO</option>
+                    <option value=27>CA SAN DIEGO</option>
+                    <option value=28>CA SAN JOSE</option>
+                    <option value=29>CA SANTA PAULA CA SUBLOT</option>
+                    <option value=30>CA SUN VALLEY</option>
+                    <option value=31>CA VALLEJO</option>
+                    <option value=32>CA VAN NUYS</option>
+                    <option value=33>CA LONG BEACH</option>
+                    <option value=34>CO DENVER</option>
+                    <option value=35>CO COLORADO SPRINGS</option>
+                    <option value=36>CO DENVER CENTRAL</option>
+                    <option value=37>CO FORT LUPTON</option>
+                    <option value=38>CO DENVER SOUTH</option>
+                    <option value=39>CT HARTFORD SPRINGFIELD</option>
+                    <option value=40>CT BERLIN CT SUBLOT</option>
+                    <option value=41>CT HARTFORD</option>
+                    <option value=42>DE SEAFORD</option>
+                    <option value=43>FL ORLANDO NORTH</option>
+                    <option value=44>FL PUNTA GORDA SOUTH</option>
+                    <option value=45>FL FT.PIERCE</option>
+                    <option value=46>FL MIAMI SOUTH</option>
+                    <option value=47>FL JACKSONVILLE EAST</option>
+                    <option value=48>FL JACKSONVILLE SOUTH</option>
+                    <option value=49>FL JACKSONVILLE NORTH</option>
+                    <option value=50>FL JACKSONVILLE WEST</option>
+                    <option value=51>FL MIAMI CENTRAL</option>
+                    <option value=52>FL MIAMI NORTH</option>
+                    <option value=53>FL TALLAHASSEE</option>
+                    <option value=54>FL OCALA</option>
+                    <option value=55>FL ORLANDO SOUTH</option>
+                    <option value=56>FL PUNTA GORDA</option>
+                    <option value=57>FL TAMPA SOUTH</option>
+                    <option value=58>FL WEST PALM BEACH</option>
+                    <option value=59>GA AUGUSTA</option>
+                    <option value=60>GA ATLANTA WEST</option>
+                    <option value=61>GA MACON</option>
+                    <option value=62>GA CARTERSVILLE</option>
+                    <option value=63>GA EAST POINT</option>
+                    <option value=64>GA CRASHEDTOYS ATLANTA</option>
+                    <option value=65>GA ATLANTA SOUTH</option>
+                    <option value=66>GA FAIRBURN</option>
+                    <option value=67>GA ATLANTA NORTH</option>
+                    <option value=68>GA ATLANTA EAST</option>
+                    <option value=69>GA SAVANNAH</option>
+                    <option value=70>GA TIFTON</option>
+                    <option value=71>GA METTER GA SUBLOT</option>
+                    <option value=72>IA DES MOINES</option>
+                    <option value=73>IA DAVENPORT</option>
+                    <option value=74>IA CRASHEDTOYS ELDRIDGE</option>
+                    <option value=75>ID BOISE</option>
+                    <option value=76>IL SOUTHERN ILLINOIS</option>
+                    <option value=77>IL ALORTON</option>
+                    <option value=78>IL CHICAGO SOUTH</option>
+                    <option value=79>IL CHICAGO NORTH</option>
+                    <option value=80>IL PEORIA</option>
+                    <option value=81>IL LOUIS IL SUBLOT</option>
+                    <option value=82>IL WHEELING</option>
+                    <option value=83>IN CICERO</option>
+                    <option value=84>IN DYER</option>
+                    <option value=85>IN FORT WAYNE</option>
+                    <option value=86>IN HAMMOND</option>
+                    <option value=87>IN HARTFORD CITY</option>
+                    <option value=88>IN INDIANAPOLIS</option>
+                    <option value=89>KS KANSAS CITY</option>
+                    <option value=90>KS WICHITA</option>
+                    <option value=91>KY EARLINGTON</option>
+                    <option value=92>KY LEXINGTON WEST</option>
+                    <option value=93>KY LEXINGTON EAST</option>
+                    <option value=94>KY LOUISVILLE</option>
+                    <option value=95>KY WALTON</option>
+                    <option value=96>LA TICKFAW LA SUBLOT</option>
+                    <option value=97>LA BATON ROUGE</option>
+                    <option value=98>LA NEW ORLEANS</option>
+                    <option value=99>LA SHREVEPORT</option>
+                    <option value=100>MA FREETOWN</option>
+                    <option value=101>MA SOUTH BOSTON</option>
+                    <option value=102>MA NORTH BOSTON</option>
+                    <option value=103>MA WEST WARREN</option>
+                    <option value=104>MD BALTIMORE EAST</option>
+                    <option value=105>MD BALTIMORE</option>
+                    <option value=106>MD BALTIMORE MD SUBLOT</option>
+                    <option value=107>MD(DC) WASHINGTON DC</option>
+                    <option value=108>MD WHITE MARSH SUBLOT</option>
+                    <option value=109>ME GRAY ME SUBLOT</option>
+                    <option value=110>ME LYMAN</option>
+                    <option value=111>ME ORONO ME SUBLOT</option>
+                    <option value=112>ME WINDHAM</option>
+                    <option value=113>MI FLINT</option>
+                    <option value=114>MI KINCHELOE</option>
+                    <option value=115>MI LANSING</option>
+                    <option value=116>MI IONIA</option>
+                    <option value=117>MI DETROIT</option>
+                    <option value=118>MN ST.CLOUD</option>
+                    <option value=119>MN CRASHEDTOYS MINNEAPOLIS</option>
+                    <option value=120>MN MINNEAPOLIS</option>
+                    <option value=121>MN HAM LAKE MN SUBLOT</option>
+                    <option value=122>MN CRASHEDTOYS EAST BETHEL</option>
+                    <option value=123>MN MINNEAPOLIS NORTH</option>
+                    <option value=124>MO ST.LOUIS</option>
+                    <option value=125>MO COLUMBIA</option>
+                    <option value=126>MO SPRINGFIELD MO SUBLOT</option>
+                    <option value=127>MO SPRINGFIELD</option>
+                    <option value=128>MO SIKESTON</option>
+                    <option value=129>MS JACKSON</option>
+                    <option value=130>MS GRENADA</option>
+                    <option value=131>MT BILLINGS</option>
+                    <option value=132>MT HELENA</option>
+                    <option value=133>NC CHINA GROVE</option>
+                    <option value=134>NC CONCORD</option>
+                    <option value=135>NC LUMBERTON NC SUBLOT</option>
+                    <option value=136>NC RALEIGH</option>
+                    <option value=137>NC GASTONIA</option>
+                    <option value=138>NC RALEIGH NORTH</option>
+                    <option value=139>NC MEBANE</option>
+                    <option value=140>NC MOCKSVILLE</option>
+                    <option value=141>ND BISMARCK</option>
+                    <option value=142>NE LINCOLN</option>
+                    <option value=143>NH CANDIA</option>
+                    <option value=144>NJ GLASSBORO EAST</option>
+                    <option value=145>NJ SOMERVILLE</option>
+                    <option value=146>NJ TRENTON</option>
+                    <option value=147>NM ALBUQUERQUE</option>
+                    <option value=148>NV LAS VEGAS</option>
+                    <option value=149>NV LAS VEGAS WEST</option>
+                    <option value=150>NV RENO</option>
+                    <option value=151>NY ALBANY</option>
+                    <option value=152>NY BUFFALO</option>
+                    <option value=153>NY BROCTON NY SUBLOT</option>
+                    <option value=154>NY LONG ISLAND</option>
+                    <option value=155>NY SYRACUSE</option>
+                    <option value=156>NY ROCHESTER</option>
+                    <option value=157>NY NEWBURGH</option>
+                    <option value=158>NY ROCHESTER</option>
+                    <option value=159>OH AKRON</option>
+                    <option value=160>OH CLEVELAND WEST</option>
+                    <option value=161>OH COLUMBUS</option>
+                    <option value=162>OH DAYTON</option>
+                    <option value=163>OH CLEVELAND EAST</option>
+                    <option value=164>OK OKLAHOMA CITY</option>
+                    <option value=165>OK TULSA</option>
+                    <option value=166>OR EUGENE</option>
+                    <option value=167>OR PORTLAND NORTH</option>
+                    <option value=168>OR PORTLAND SOUTH</option>
+                    <option value=169>PA PITTSBURGH EAST</option>
+                    <option value=170>PA PHILADELPHIA EAST SUBLOT</option>
+                    <option value=171>PA CHAMBERSBURG</option>
+                    <option value=172>PA SCRANTON</option>
+                    <option value=173>PA ALTOONA</option>
+                    <option value=174>PA PITTSBURGH NORTH</option>
+                    <option value=175>PA HARRISBURG</option>
+                    <option value=176>PA PHILADELPHIA</option>
+                    <option value=177>PA PITTSBURGH SOUTH</option>
+                    <option value=178>PA YORK HAVEN</option>
+                    <option value=179>RI EXETER</option>
+                    <option value=180>SC COLUMBIA</option>
+                    <option value=181>SC GREER</option>
+                    <option value=182>SC NORTH CHARLESTON</option>
+                    <option value=183>SC GASTON SC SUBLOT</option>
+                    <option value=184>SC SPARTANBURG SUBLOT</option>
+                    <option value=185>SD RAPID CITY</option>
+                    <option value=186>TN NASHVILLE</option>
+                    <option value=187>TN KNOXVILLE</option>
+                    <option value=188>TN MEMPHIS</option>
+                    <option value=189>TX ABILENE</option>
+                    <option value=190>TX AMARILLO</option>
+                    <option value=191>TX ANDREWS</option>
+                    <option value=192>TX EL PASO</option>
+                    <option value=193>TX HASLET TX SUBLOT</option>
+                    <option value=194>TX CORPUS CHRISTI</option>
+                    <option value=195>TX CRASHEDTOYS DALLAS</option>
+                    <option value=196>TX DALLAS</option>
+                    <option value=197>TX FT.WORTH</option>
+                    <option value=198>TX HOUSTON</option>
+                    <option value=199>TX LONGVIEW</option>
+                    <option value=200>TX LUFKIN</option>
+                    <option value=201>TX MCALLEN</option>
+                    <option value=202>TX AUSTIN</option>
+                    <option value=203>TX ORMY TX SUBLOT</option>
+                    <option value=204>TX SAN ANTONIO</option>
+                    <option value=205>TX WACO</option>
+                    <option value=206>TX ANTHONY TX SUBLOT</option>
+                    <option value=207>TX WILMER TX SUBLOT</option>
+                    <option value=208>TX DALLAS SOUTH</option>
+                    <option value=209>UT OGDEN SUBLOT</option>
+                    <option value=210>UT SALT LAKE CITY</option>
+                    <option value=211>VA RICHMOND EAST</option>
+                    <option value=212>VA DANVILLE</option>
+                    <option value=213>VA FREDERICKSBURG</option>
+                    <option value=214>VA HAMPTON</option>
+                    <option value=215>VA RICHMOND</option>
+                    <option value=216>VT ORLEANS VT SUBLOT</option>
+                    <option value=217>VT RUTLAND</option>
+                    <option value=218>WA SPOKANE</option>
+                    <option value=219>WA NORTH SEATTLE</option>
+                    <option value=220>WA GRAHAM</option>
+                    <option value=221>WA PASCO</option>
+                    <option value=222>WI APPLETON</option>
+                    <option value=223>WI MILWAUKEE</option>
+                    <option value=224>WI MILWAUKEE NORTH</option>
+                    <option value=225>WI MILWAUKEE SOUTH</option>
+                    <option value=226>WI MADISON</option>
+                    <option value=227>WI MADISON SOUTH</option>
+                    <option value=228>WI WAUKESHA WI SUBLOT</option>
+                    <option value=229>WV CHARLESTON</option>
+                    <option value=230>WY CASPER</option>
+                </select>
+            </div>
+            <div id="manheim_cont" class="row_block">
+                <p>Площадки Manheim</p>
+                <select name="place_copart" id="place_copart">
+                    <option value=1>AL MOBILE</option>
+                    <option value=2>AL BIRMINGHAM</option>
+                    <option value=3>AL MONTGOMERY</option>
+                    <option value=4>AL DOTHAN</option>
+                    <option value=5>AL TANNER</option>
+                    <option value=6>AL MOBILE SOUTH</option>
+                    <option value=7>AL BIRMINGHAM AL SUBLOT</option>
+                    <option value=8>AR LITTLE ROCK</option>
+                    <option value=9>AR FAYETTEVILLE</option>
+                    <option value=10>AZ PHOENIX</option>
+                    <option value=11>AZ PHOENIX NORTH</option>
+                    <option value=12>AZ TUCSON</option>
+                    <option value=13>CA ADELANTO</option>
+                    <option value=14>CA REDDING</option>
+                    <option value=15>CA ANTELOPE</option>
+                    <option value=16>CA BAKERSFIELD</option>
+                    <option value=17>CA SAN BERNARDINO</option>
+                    <option value=18>CA FRESNO</option>
+                    <option value=19>CA SACRAMENTO CA SUBLOT</option>
+                    <option value=20>CA HAYWARD</option>
+                    <option value=21>CA LANCASTER CA SUBLOT</option>
+                    <option value=22>CA LOS ANGELES</option>
+                    <option value=23>CA MARTINEZ</option>
+                    <option value=24>CA MENTONE</option>
+                    <option value=25>CA RANCHO CUCAMONGA</option>
+                    <option value=26>CA SACRAMENTO</option>
+                    <option value=27>CA SAN DIEGO</option>
+                    <option value=28>CA SAN JOSE</option>
+                    <option value=29>CA SANTA PAULA CA SUBLOT</option>
+                    <option value=30>CA SUN VALLEY</option>
+                    <option value=31>CA VALLEJO</option>
+                    <option value=32>CA VAN NUYS</option>
+                    <option value=33>CA LONG BEACH</option>
+                    <option value=34>CO DENVER</option>
+                    <option value=35>CO COLORADO SPRINGS</option>
+                    <option value=36>CO DENVER CENTRAL</option>
+                    <option value=37>CO FORT LUPTON</option>
+                    <option value=38>CO DENVER SOUTH</option>
+                    <option value=39>CT HARTFORD SPRINGFIELD</option>
+                    <option value=40>CT BERLIN CT SUBLOT</option>
+                    <option value=41>CT HARTFORD</option>
+                    <option value=42>DE SEAFORD</option>
+                    <option value=43>FL ORLANDO NORTH</option>
+                    <option value=44>FL PUNTA GORDA SOUTH</option>
+                    <option value=45>FL FT.PIERCE</option>
+                    <option value=46>FL MIAMI SOUTH</option>
+                    <option value=47>FL JACKSONVILLE EAST</option>
+                    <option value=48>FL JACKSONVILLE SOUTH</option>
+                    <option value=49>FL JACKSONVILLE NORTH</option>
+                    <option value=50>FL JACKSONVILLE WEST</option>
+                    <option value=51>FL MIAMI CENTRAL</option>
+                    <option value=52>FL MIAMI NORTH</option>
+                    <option value=53>FL TALLAHASSEE</option>
+                    <option value=54>FL OCALA</option>
+                    <option value=55>FL ORLANDO SOUTH</option>
+                    <option value=56>FL PUNTA GORDA</option>
+                    <option value=57>FL TAMPA SOUTH</option>
+                    <option value=58>FL WEST PALM BEACH</option>
+                    <option value=59>GA AUGUSTA</option>
+                    <option value=60>GA ATLANTA WEST</option>
+                    <option value=61>GA MACON</option>
+                    <option value=62>GA CARTERSVILLE</option>
+                    <option value=63>GA EAST POINT</option>
+                    <option value=64>GA CRASHEDTOYS ATLANTA</option>
+                    <option value=65>GA ATLANTA SOUTH</option>
+                    <option value=66>GA FAIRBURN</option>
+                    <option value=67>GA ATLANTA NORTH</option>
+                    <option value=68>GA ATLANTA EAST</option>
+                    <option value=69>GA SAVANNAH</option>
+                    <option value=70>GA TIFTON</option>
+                    <option value=71>GA METTER GA SUBLOT</option>
+                    <option value=72>IA DES MOINES</option>
+                    <option value=73>IA DAVENPORT</option>
+                    <option value=74>IA CRASHEDTOYS ELDRIDGE</option>
+                    <option value=75>ID BOISE</option>
+                    <option value=76>IL SOUTHERN ILLINOIS</option>
+                    <option value=77>IL ALORTON</option>
+                    <option value=78>IL CHICAGO SOUTH</option>
+                    <option value=79>IL CHICAGO NORTH</option>
+                    <option value=80>IL PEORIA</option>
+                    <option value=81>IL LOUIS IL SUBLOT</option>
+                    <option value=82>IL WHEELING</option>
+                    <option value=83>IN CICERO</option>
+                    <option value=84>IN DYER</option>
+                    <option value=85>IN FORT WAYNE</option>
+                    <option value=86>IN HAMMOND</option>
+                    <option value=87>IN HARTFORD CITY</option>
+                    <option value=88>IN INDIANAPOLIS</option>
+                    <option value=89>KS KANSAS CITY</option>
+                    <option value=90>KS WICHITA</option>
+                    <option value=91>KY EARLINGTON</option>
+                    <option value=92>KY LEXINGTON WEST</option>
+                    <option value=93>KY LEXINGTON EAST</option>
+                    <option value=94>KY LOUISVILLE</option>
+                    <option value=95>KY WALTON</option>
+                    <option value=96>LA TICKFAW LA SUBLOT</option>
+                    <option value=97>LA BATON ROUGE</option>
+                    <option value=98>LA NEW ORLEANS</option>
+                    <option value=99>LA SHREVEPORT</option>
+                    <option value=100>MA FREETOWN</option>
+                    <option value=101>MA SOUTH BOSTON</option>
+                    <option value=102>MA NORTH BOSTON</option>
+                    <option value=103>MA WEST WARREN</option>
+                    <option value=104>MD BALTIMORE EAST</option>
+                    <option value=105>MD BALTIMORE</option>
+                    <option value=106>MD BALTIMORE MD SUBLOT</option>
+                    <option value=107>MD(DC) WASHINGTON DC</option>
+                    <option value=108>MD WHITE MARSH SUBLOT</option>
+                    <option value=109>ME GRAY ME SUBLOT</option>
+                    <option value=110>ME LYMAN</option>
+                    <option value=111>ME ORONO ME SUBLOT</option>
+                    <option value=112>ME WINDHAM</option>
+                    <option value=113>MI FLINT</option>
+                    <option value=114>MI KINCHELOE</option>
+                    <option value=115>MI LANSING</option>
+                    <option value=116>MI IONIA</option>
+                    <option value=117>MI DETROIT</option>
+                    <option value=118>MN ST.CLOUD</option>
+                    <option value=119>MN CRASHEDTOYS MINNEAPOLIS</option>
+                    <option value=120>MN MINNEAPOLIS</option>
+                    <option value=121>MN HAM LAKE MN SUBLOT</option>
+                    <option value=122>MN CRASHEDTOYS EAST BETHEL</option>
+                    <option value=123>MN MINNEAPOLIS NORTH</option>
+                    <option value=124>MO ST.LOUIS</option>
+                    <option value=125>MO COLUMBIA</option>
+                    <option value=126>MO SPRINGFIELD MO SUBLOT</option>
+                    <option value=127>MO SPRINGFIELD</option>
+                    <option value=128>MO SIKESTON</option>
+                    <option value=129>MS JACKSON</option>
+                    <option value=130>MS GRENADA</option>
+                    <option value=131>MT BILLINGS</option>
+                    <option value=132>MT HELENA</option>
+                    <option value=133>NC CHINA GROVE</option>
+                    <option value=134>NC CONCORD</option>
+                    <option value=135>NC LUMBERTON NC SUBLOT</option>
+                    <option value=136>NC RALEIGH</option>
+                    <option value=137>NC GASTONIA</option>
+                    <option value=138>NC RALEIGH NORTH</option>
+                    <option value=139>NC MEBANE</option>
+                    <option value=140>NC MOCKSVILLE</option>
+                    <option value=141>ND BISMARCK</option>
+                    <option value=142>NE LINCOLN</option>
+                    <option value=143>NH CANDIA</option>
+                    <option value=144>NJ GLASSBORO EAST</option>
+                    <option value=145>NJ SOMERVILLE</option>
+                    <option value=146>NJ TRENTON</option>
+                    <option value=147>NM ALBUQUERQUE</option>
+                    <option value=148>NV LAS VEGAS</option>
+                    <option value=149>NV LAS VEGAS WEST</option>
+                    <option value=150>NV RENO</option>
+                    <option value=151>NY ALBANY</option>
+                    <option value=152>NY BUFFALO</option>
+                    <option value=153>NY BROCTON NY SUBLOT</option>
+                    <option value=154>NY LONG ISLAND</option>
+                    <option value=155>NY SYRACUSE</option>
+                    <option value=156>NY ROCHESTER</option>
+                    <option value=157>NY NEWBURGH</option>
+                    <option value=158>NY ROCHESTER</option>
+                    <option value=159>OH AKRON</option>
+                    <option value=160>OH CLEVELAND WEST</option>
+                    <option value=161>OH COLUMBUS</option>
+                    <option value=162>OH DAYTON</option>
+                    <option value=163>OH CLEVELAND EAST</option>
+                    <option value=164>OK OKLAHOMA CITY</option>
+                    <option value=165>OK TULSA</option>
+                    <option value=166>OR EUGENE</option>
+                    <option value=167>OR PORTLAND NORTH</option>
+                    <option value=168>OR PORTLAND SOUTH</option>
+                    <option value=169>PA PITTSBURGH EAST</option>
+                    <option value=170>PA PHILADELPHIA EAST SUBLOT</option>
+                    <option value=171>PA CHAMBERSBURG</option>
+                    <option value=172>PA SCRANTON</option>
+                    <option value=173>PA ALTOONA</option>
+                    <option value=174>PA PITTSBURGH NORTH</option>
+                    <option value=175>PA HARRISBURG</option>
+                    <option value=176>PA PHILADELPHIA</option>
+                    <option value=177>PA PITTSBURGH SOUTH</option>
+                    <option value=178>PA YORK HAVEN</option>
+                    <option value=179>RI EXETER</option>
+                    <option value=180>SC COLUMBIA</option>
+                    <option value=181>SC GREER</option>
+                    <option value=182>SC NORTH CHARLESTON</option>
+                    <option value=183>SC GASTON SC SUBLOT</option>
+                    <option value=184>SC SPARTANBURG SUBLOT</option>
+                    <option value=185>SD RAPID CITY</option>
+                    <option value=186>TN NASHVILLE</option>
+                    <option value=187>TN KNOXVILLE</option>
+                    <option value=188>TN MEMPHIS</option>
+                    <option value=189>TX ABILENE</option>
+                    <option value=190>TX AMARILLO</option>
+                    <option value=191>TX ANDREWS</option>
+                    <option value=192>TX EL PASO</option>
+                    <option value=193>TX HASLET TX SUBLOT</option>
+                    <option value=194>TX CORPUS CHRISTI</option>
+                    <option value=195>TX CRASHEDTOYS DALLAS</option>
+                    <option value=196>TX DALLAS</option>
+                    <option value=197>TX FT.WORTH</option>
+                    <option value=198>TX HOUSTON</option>
+                    <option value=199>TX LONGVIEW</option>
+                    <option value=200>TX LUFKIN</option>
+                    <option value=201>TX MCALLEN</option>
+                    <option value=202>TX AUSTIN</option>
+                    <option value=203>TX ORMY TX SUBLOT</option>
+                    <option value=204>TX SAN ANTONIO</option>
+                    <option value=205>TX WACO</option>
+                    <option value=206>TX ANTHONY TX SUBLOT</option>
+                    <option value=207>TX WILMER TX SUBLOT</option>
+                    <option value=208>TX DALLAS SOUTH</option>
+                    <option value=209>UT OGDEN SUBLOT</option>
+                    <option value=210>UT SALT LAKE CITY</option>
+                    <option value=211>VA RICHMOND EAST</option>
+                    <option value=212>VA DANVILLE</option>
+                    <option value=213>VA FREDERICKSBURG</option>
+                    <option value=214>VA HAMPTON</option>
+                    <option value=215>VA RICHMOND</option>
+                    <option value=216>VT ORLEANS VT SUBLOT</option>
+                    <option value=217>VT RUTLAND</option>
+                    <option value=218>WA SPOKANE</option>
+                    <option value=219>WA NORTH SEATTLE</option>
+                    <option value=220>WA GRAHAM</option>
+                    <option value=221>WA PASCO</option>
+                    <option value=222>WI APPLETON</option>
+                    <option value=223>WI MILWAUKEE</option>
+                    <option value=224>WI MILWAUKEE NORTH</option>
+                    <option value=225>WI MILWAUKEE SOUTH</option>
+                    <option value=226>WI MADISON</option>
+                    <option value=227>WI MADISON SOUTH</option>
+                    <option value=228>WI WAUKESHA WI SUBLOT</option>
+                    <option value=229>WV CHARLESTON</option>
+                    <option value=230>WY CASPER</option>
+                </select>
+            </div>
+            <div id="copart_sublot_cont" class="row_block">
+                <p>Площадки Sublot Copart</p>
+                <select name="place_sublot_copart" id="place_sublot_copart">
+                    <option value=1>AL 3101 DAVEY ALLISON BLVD BIRMINGHAM AL 35023</option>
+                    <option value=2>AL THEODORE SUBLOT 9401 OLD PASCAGOULA RD THEODORE AL 36582</option>
+                    <option value=3>AZ GRAND TURISMO MOTERZ 4032 N 7TH STREET PHOENIX AZ 85014</option>
+                    <option value=4>CA 2348 INDUSTRIAL PKWY W HAYWARD CA 94545</option>
+                    <option value=5>CA 1000 E LOMITA BLVD.WILMINGTON CA 90744</option>
+                    <option value=6>CA 11201 PENDLETON ST SUN WALLEY CA 91352</option>
+                    <option value=7>CA 1267 HWY 99 GRIDLEY CA 95948</option>
+                    <option value=8>CA 12743 LLAGA AVE SAN MARTIN CA 95046</option>
+                    <option value=9>CA 43927 90TH STREET LANCASTER CA 93535</option>
+                    <option value=10>CA 792 CODONI AVE MODESTO CA 95357</option>
+                    <option value=11>CA 8650 ANTELOPE NORTH ROAD ANTELOPE CA 95843</option>
+                    <option value=12>CA 8780 FRUITRIDGE ROAD SACRAMENTO CA 95826</option>
+                    <option value=13>CA 918 MISSION ROCK ROAD B-1 SANTA PAULA CA 93060</option>
+                    <option value=14>CA COPART SAN JOSE SUBLOT 2542 MONTEREY RD.GATE D SAN JOSE CA 95111</option>
+                    <option value=15>CA COPART VALLEJO SUBLOT 2744 GREEN ISLAND ROAD AMERICAN CANYON CA 94503</option>
+                    <option value=16>CA LA MEDIA SUBLOT 1369 RADAR RD SAN DIEGO CA 92154</option>
+                    <option value=17>CA OTAY SUBLOT 7277 OTAY MESA RD.SAN DIEGO CA 92154</option>
+                    <option value=18>CA PERRIS SUBLOT 4332 N WEBSTER AVE PERRIS CA 92571</option>
+                    <option value=19>CO 1031 S.ROYER STREET COLORADO SPRINGS CO 80903</option>
+                    <option value=20>CO 1528 10 RD MACK CO 81525</option>
+                    <option value=21>CO 247 WOOTEN ROAD COLORADO SPRINGS CO 80916</option>
+                    <option value=22>CO 560 AIR LN COLORADO SPRINGS CO 80929</option>
+                    <option value=23>CO JB MECHANICAL 4205 W.13TH ST PUEBLO CO 81005</option>
+                    <option value=24>CO NUNN SUBLOT 925 LONE TREE CIRCLE NUNN CO 80648</option>
+                    <option value=25>CT 525 CHRISTIAN LANE BERLIN CT 06037</option>
+                    <option value=26>CT HARTFORD SOUTH 525 CHRISTIAN LANE NEW BRITAIN CT 06051</option>
+                    <option value=27>CT NORTH SUBLOT 625 CHRISTIAN LANE NEW BRITAIN CT 06051</option>
+                    <option value=28>FL 1 SPEEDWAY BLVD HOMESTEAD FL 33035</option>
+                    <option value=29>FL 12511 U.S. 301 THONOTOSASSA FL 33592</option>
+                    <option value=30>FL 12850 NW 27TH AVE.OPA LOCKA FL 33054</option>
+                    <option value=31>FL 300 SETZER RD JACKSONVILLE FL 32218</option>
+                    <option value=32>FL 307 E LANDSTREET RD 32824</option>
+                    <option value=33>FL 3800 NW 16TH BOULEVARD OKEECHOBEE FL 34972</option>
+                    <option value=34>FL 4545 COUNTY RD 835 CLEWISTON FL 33440</option>
+                    <option value=35>FL COPART - DOVER SUBLOT 15237 DR. MLK JR BLVD DOVER FL 33527</option>
+                    <option value=36>FL MULBERRY SUBLOT 4201 BONNIE MINE RD MULBERRY FL 33860</option>
+                    <option value=37>FL YARD 137 PUNTA GORDA 5017 DUNCAN ROAD PUNTA GORDA FL 33982</option>
+                    <option value=38>GA 401 EAST VERTIA STREET METTER GA 30439</option>
+                    <option value=39>GA 500 LYLE FIELD ROAD JEFFERSON GA 30549</option>
+                    <option value=40>GA 6737 ROOSEVELT HWY FAIRBURN GA 30213</option>
+                    <option value=41>GA AUTO FORUM GROUP 5403 HWY 138 STE A OXFORD GA 30054</option>
+                    <option value=42>GA DELTA CIRCLE 7290 DELTA CIRCLE AUSTELL GA 30168</option>
+                    <option value=43>IA 169 DAVENPORT SUBLOT 200 E 1ST ST DAVENPORT IA 52806</option>
+                    <option value=44>IA DAVENPORT SUBLOT 3601 SOUTH 1ST STREET ELDRIDGE IA 52748</option>
+                    <option value=45>IA METRO 4300 DELAWARE AVENUE DES MOINES IA 50313</option>
+                    <option value=46>IL 31W 120 W BARTLETT RD BARTLETT IL 60103</option>
+                    <option value=47>IL 99 RACEHORSE DRIVE EAST ST LOUIS IL 62205</option>
+                    <option value=48>IL 99 RACEHORSE DRIVE ALORTON ILLINOIS 62207</option>
+                    <option value=49>IL VEH LOC @ WOODMAR SUBLOT HEIGHTS SUBLOT 1301 S STATE ST CHICAGO HEIGHTS IL 604011</option>
+                    <option value=50>IN 1535 E.226TH ST CICERO IN 46034</option>
+                    <option value=51>KS KANSAS CITY SUBLOT A 6130 KANSAS AVE KANSAS CITY KS 66111</option>
+                    <option value=52>KY EARLINGTON SUBLOT 700 N SANDCUT ROAD EARLINGTON KY 42410</option>
+                    <option value=53>KY GREENVILLE SUBLOT 5770 US HWY 62 W GREENVILLE KY 42345</option>
+                    <option value=54>KY LAWRENCEBURG SUBLOT 1051 INDUSTRIAL RD LAWRENCEBURG KY 40342</option>
+                    <option value=55>KY OUTER LOOP SUBLOT 1049 OUTER LOOP LOUISVILLE KY 40219</option>
+                    <option value=56>LA 48205 HIGHWAY 51 TICKFAW LA 70466</option>
+                    <option value=57>MA BEST BUY AUTO 131 WASHINGTON ST ATTLEBORO MA 02703</option>
+                    <option value=58>MA COPART-053B 566 MAIN STREET HUDSON MA 01749</option>
+                    <option value=59>MA COPART - ROWLEY 164 BOXFORD ROAD ROWLEY MA 01969</option>
+                    <option value=60>MA-NORTH BOSTON 55R HIGH STREET BILLERICA MA 01862</option>
+                    <option value=61>MD 11715 PULASKI HWY WHITE MARSH MD 21162</option>
+                    <option value=62>MD 601 W PATAPSCO AVE BALTIMORE MD 21225</option>
+                    <option value=63>MD FRUITLAND SUBLOT 626 S FRUITLAND BLVD FRUITLAND MD 21826</option>
+                    <option value=64>ME 40 HOLMES ROAD SCARBOROUGH ME 04074</option>
+                    <option value=65>ME 486 MAIN ROAD ORONO ME 04473</option>
+                    <option value=66>ME 53 WEST GRAY RD GRAY ME 04039</option>
+                    <option value=67>MI WAYLAND MI 49348</option>
+                    <option value=68>MN 10588 CENTRAL AVE NE BLAINE MINNESOTA 55434</option>
+                    <option value=69>MN 15932 JARVIS ST NE ELK RIVER MN 55330</option>
+                    <option value=70>MN 20798 US HIGHWAY 10 BIG LAKE MN 55309</option>
+                    <option value=71>MN 2975 PARTRIDGE RD ROSEVILLE MN 55113</option>
+                    <option value=72>MN 329 BUNKER LAKE BLVD HAM LAKE MN 55304</option>
+                    <option value=73>MN COPART FRIDLEY SUBLOT 3737 EAST RIVER ROAD FRIDLEY MN 55421</option>
+                    <option value=74>MO 1619 S GOLDEN AVE SPRINGFIELD MO 65807</option>
+                    <option value=75>MO 1795 DUNN ROAD SAINT LOUIS MO 63138</option>
+                    <option value=76>MO COPART BRIDGETON SUBLOT 3873 TAUSSIG AVENUE BRIDGETON MO 63044</option>
+                    <option value=77>NC 2668 HIGHWAY 601 SOUTH MOCKSVILLE NC 27028</option>
+                    <option value=78>NC 4019 NC HWY 72 W LUMBERTON NC 28360</option>
+                    <option value=79>NC 7940 US HWY 601 S CONCORD NC 28025</option>
+                    <option value=80>NC MEBANE SUBLOT 1941 US 70 MEBANE NC 27302</option>
+                    <option value=81>NC WINSTON-SALEM SUBLOT 6775 REYNOLDA RD PFAFFTOWN NC 27040</option>
+                    <option value=82>NC YARD 54 310 COPART RD DUNN NC 28334</option>
+                    <option value=83>ND 1871 REVERE DRIVE BISMARCK ND 58501</option>
+                    <option value=84>NJ 154 TENNENT RD 7 DAYS FREE STO MORGANVILLE NJ 07751</option>
+                    <option value=85>NJ 253 HWY 34 MATAWAN NJ 07747</option>
+                    <option value=86>NJ 45 VICTORY PLAZA SOUTH AMBOY NJ 08879</option>
+                    <option value=87>NJ COPART JOBSTOWN SUBLOT 304 NJ ROUTE 68 JOBSTOWN NJ 08041</option>
+                    <option value=88>NJ WILLIAMSTOWN SUBLOT 3398 SOUTH BLACK HORSE PIKE WILLIAMSTOWN NJ 08094</option>
+                    <option value=89>NJ Yard 69 GLASSBORO 781 JACOB HARRIS AVENUE GLASSBORO NJ 08028</option>
+                    <option value=90>NV CHUCK LENZIE COURT ARROLIME NV 89165</option>
+                    <option value=91>NV COPART CLAYTON SUBLOT 3441 N.CLAYTON ST.NORTH LAS VEGAS NV 89032</option>
+                    <option value=92>NY 128 CENTRAL AVENUE BROCTON NY 14716</option>
+                    <option value=93>NY 2731 TOWN LINE ROAD ALDEN NY 14004</option>
+                    <option value=94>NY 580 LATIN TOWN ROAD MARLBORO NY 12542</option>
+                    <option value=95>NY ALPHA AUTO 115 PORT WASTSON ST CORTLAND NY 13045</option>
+                    <option value=96>NY AMSTERDAM SUBLOT 5915 NY-30 AMSTERDAM NY 12010</option>
+                    <option value=97>NY COPART NEWBURGH SUBLOT 18 ROUTE 17K NEWBURGH NY 12550</option>
+                    <option value=98>NY LATTINTOWN SUBLOT 574 LATTINTOWN ROAD MARLBORO NY 12542</option>
+                    <option value=99>NY S.I. SUBLOT 211 JOHNSON ST STATEN ISLAND 10309</option>
+                    <option value=100>NY YOUNGS SUBLOT 1871 RT 9W MILTON NY 12547</option>
+                    <option value=101>OK 5329 S MADERA BLVD OKLAHOMA CITY OK 73129</option>
+                    <option value=102>OK LINDA WOOLDRIDGE 2829 SE 15TH OKLAHOMA CITY OK 73129</option>
+                    <option value=103>PA 77 BRISTOL RD CHALFONT PA 18914</option>
+                    <option value=104>PA 795 SIPE ROAD YORK HAVEN PA 17370</option>
+                    <option value=105>PA 83 EAST LANCASTER AVENUE MALVERN PA 19355</option>
+                    <option value=106>PA GRANTVILLE PA 17028</option>
+                    <option value=107>PA WEST MIFFLIN PA 15122</option>
+                    <option value=108>PA YARD 026 2704 GERYVILLE PIKE PENNSBURG PA 18073</option>
+                    <option value=109>SC 120 PINE PLAIN RD GASTON SC 29053</option>
+                    <option value=110>SC 1921 NAZARETH CHURCH RD SPARTANBURG SC 29301</option>
+                    <option value=111>SC 700 SOUTH BOUND ROAD GASTON SC 29053</option>
+                    <option value=112>SC COPART GREER SUBLOT 2465 HIGHWAY 101 SOUTH GREER SC 29651</option>
+                    <option value=113>SC SHA LIU 120 PINE PLAIN GASTON SC 29053</option>
+                    <option value=114>SD ALAN'S AUTO RECYCLING 1800 SEGER DRIVE RAPID CITY SD 57701</option>
+                    <option value=115>TX 14603 SPEEDWAY PARK VON ORMY TX 78073</option>
+                    <option value=116>TX 1701 E BELT LINE RD WILMER TX 75172</option>
+                    <option value=117>TX 17529 HWY 6 COLLEGE STATION TX 77845</option>
+                    <option value=118>TX 2525 FM 565 BAYTOWN TX 77523</option>
+                    <option value=119>TX 351 VALLEY CHILI ROAD ANTHONY TX 79821</option>
+                    <option value=120>TX 7201 N GENERAL BRUCE DR TEMPLE TEXAS 76501</option>
+                    <option value=121>TX 950 BLUE MOUND RD WEST HASLET TX 76052</option>
+                    <option value=122>TX CHANNELVIEW 400 S SHELDON ROAD CHANNELVIEW TX 77530</option>
+                    <option value=123>TX DALTON OFFSITE 1000 DALTON LN AUSTIN TX 78742</option>
+                    <option value=124>TX HARBORSIDE SUBLOT 5800 HARBORSIDE DR GALVESTON TX 77554</option>
+                    <option value=125>TX TAYLOR TX 76574</option>
+                    <option value=126>UT 170 W.CENTER STREET NORTH SALT LAKE UT 84054</option>
+                    <option value=127>UT 3586 NORTH 2000 WEST FARR WEST UT 84404</option>
+                    <option value=128>UT MAGNA SUBLOT 7370 W 2100 S MAGNA UT 84044</option>
+                    <option value=129>UT YD 388 TOOELE SUBLOT 301 INDUSTRIAL LOOP ROAD TOOELE UT 84074</option>
+                    <option value=130>VA COPART YARD 194 4717 MASSAPONAX CHURCH ROAD FREDERICKSBURG VA 22408</option>
+                    <option value=131>VT 2743 VT-22A FAIR HAVEN VT 05743</option>
+                    <option value=132>VT 32 STAGE COACH ROAD ORLEANS VT 05860</option>
+                    <option value=133>WA 18515 PACIFIC AVE S SPANAWAY WA 98387</option>
+                    <option value=134>WI 1242 W LINCOLN AVE WAUKESHA WI 53186</option>
+                    <option value=135>WI 4825 SOUTH WHITNALL AVENUE CUDAHY WI 53110</option>
+                    <option value=136>WI 7213 HWY 41 CALEDONIA WI 53108</option>
+                    <option value=137>WI YARD 339 SUBLOT 9201 N 107TH ST MILWAUKEE WI 53224</option>
+                    <option value=138>WI YORKVILLE SUBLOT 2118 N SYLVANIA AVE STURTEVANT WI 53177</option>
+                    </select>
+            </div>
+            <div class="row_block" id="aa_cont">
+                <p>Площадки |AA|</p>
+                <select name="|AA|" id="AA">
+                    <option value=1>AL ADESA Birmingham (AL) </option>
+                    <option value=2>AL Huntsville </option>
+                    <option value=3>AL BIRMINGHAM </option>
+                    <option value=4>AL Dothan </option>
+                    <option value=5>AL Anchorag  </option>
+                    <option value=6>AR FAYETTEVILLE </option>
+                    <option value=7>AR LITTLE ROCK </option>
+                    <option value=8>AZ PHOENIX   </option>
+                    <option value=9>AZ TUCSON </option>
+                    <option value=10>CA Anaheim </option>
+                    <option value=11>CA East Bay </option>
+                    <option value=12>CA BURBANK </option>
+                    <option value=13>CA ACE Carson (CA) </option>
+                    <option value=14>CA Colton </option>
+                    <option value=15>CA Fontanaport   </option>
+                    <option value=16>CA Fremont </option>
+                    <option value=17>CA FRESNO </option>
+                    <option value=18>CA Los Angeles </option>
+                    <option value=19>CA High Desert </option>
+                    <option value=20>CA North Hollywood </option>
+                    <option value=21>CA ACE - Perris </option>
+                    <option value=22>CA Sacramento </option>
+                    <option value=23>CA SAN DIEGO </option>
+                    <option value=24>CA Los Angeles South </option>
+                    <option value=25>CO Colorado Springs </option>
+                    <option value=26>CO DENVER EAST </option>
+                    <option value=27>CO Western Colorado </option>
+                    <option value=28>СO DENVER </option>
+                    <option value=29>ST HARTFORD </option>
+                    <option value=30>ST Hartford South </option>
+                    <option value=31>DE New Castle </option>
+                    <option value=32>FL Clearwater </option>
+                    <option value=33>FL Fort Myers </option>
+                    <option value=34>FL FT. PIERCE  </option>
+                    <option value=35>FL Tampa North  </option>
+                    <option value=36>FL JACKSONVILLE  </option>
+                    <option value=37>FL Jupiter  </option>
+                    <option value=38>FL Pensacola  </option>
+                    <option value=39>FL Fort Myers  </option>
+                    <option value=40>FL Miami  </option>
+                    <option value=41>FL ORLANDO  </option>
+                    <option value=42>FL Tempa  </option>
+                    <option value=43>FL MIAMI NORTH  </option>
+                    <option value=44>FL Orlando-North  </option>
+                    <option value=45>FL MIAMI NORTH (FL)  </option>
+                    <option value=46>GA ATLANTA NORTH  </option>
+                    <option value=47>GA ATLANTA SOUTH  </option>
+                    <option value=48>GA ATLANTA EAST  </option>
+                    <option value=49>GA MACON  </option>
+                    <option value=50>GA SAVANNAH  </option>
+                    <option value=51>GA TIFTON  </option>
+                    <option value=52>GA Atlanta East  </option>
+                    <option value=53>HI Honolulu  </option>
+                    <option value=54>HI Honolulu/ - A Komoha  </option>
+                    <option value=55>IA Daven  </option>
+                    <option value=56>IA Des Moines  </option>
+                    <option value=57>ID BOISE  </option>
+                    <option value=58>IL CHICAGO WEST  </option>
+                    <option value=59>IL St. Louis  </option>
+                    <option value=60>IL CHICAGO NORTH  </option>
+                    <option value=61>IL LINCOLN  </option>
+                    <option value=62>IL CHICAGO SOUTH  </option>
+                    <option value=63>IL Specialty Division  </option>
+                    <option value=64>IN Indianapolis (IN)  </option>
+                    <option value=65>IN Indianapolis  </option>
+                    <option value=66>IN Fort Wayne</option>
+                    <option value=67>IN South Bend  </option>
+                    <option value=68>KS KANSAS CITY  </option>
+                    <option value=69>KS WICHITA  </option>
+                    <option value=70>KY Ashland KY  </option>
+                    <option value=71>KY Bowling Green, KY  </option>
+                    <option value=72>KY LOUISVILLE NORTI  </option>
+                    <option value=73>KY Paducah, KY  </option>
+                    <option value=74>KY Louisville  </option>
+                    <option value=75>LA Baton Rouge (LA)  </option>
+                    <option value=76>LA NEW ORLEANS  </option>
+                    <option value=77>LA Shreve  </option>
+                    <option value=78>LA Lafovetto  </option>
+                    <option value=79>LA BATON ROUGE  </option>
+                    <option value=80>LA NEW ORLEANS EAST  </option>
+                    <option value=81>LA NORTH SCOTT  </option>
+                    <option value=82>MA Taunton  </option>
+                    <option value=83>MA Boston Shirley  </option>
+                    <option value=84>MA Templaton (MA)  </option>
+                    <option value=85>MD BALTIMORE  </option>
+                    <option value=86>MD Metro DC  </option>
+                    <option value=87>MD Dundalk  </option>
+                    <option value=88>MD Elkton  </option>
+                    <option value=89>MD Laurel  </option>
+                    <option value=90>MD Rosedale  </option>
+                    <option value=91>MD WHITE PLAINS  </option>
+                    <option value=92>ME land - Gorham  </option>
+                    <option value=93>MI Great Lakes  </option>
+                    <option value=94>MI DETROIT  </option>
+                    <option value=95>MI Grand Rapids  </option>
+                    <option value=96>Ml Flint  </option>
+                    <option value=97>MN Minneapolis South  </option>
+                    <option value=98>MN Minneapolis  </option>
+                    <option value=99>MO Kansas City East  </option>
+                    <option value=100>MO Springfield  </option>
+                    <option value=101>MS BYRAM </option>
+                    <option value=102>MS Grenada </option>
+                    <option value=103>MS Jackson </option>
+                    <option value=104>MS Gulf Coast </option>
+                    <option value=105>MT BILLINGS </option>
+                    <option value=106>MT Missoula </option>
+                    <option value=107>NC Wilmington </option>
+                    <option value=108>NC Charlotte </option>
+                    <option value=109>NC Raleigh </option>
+                    <option value=110>NC Concord </option>
+                    <option value=111>NC Asheville </option>
+                    <option value=112>NC Greensboro </option>
+                    <option value=113>NC High Point </option>
+                    <option value=114>ND FARGO </option>
+                    <option value=115>NE Omaha </option>
+                    <option value=116>NH Manchester </option>
+                    <option value=117>NJ Avenel New Jersey </option>
+                    <option value=118>NJ Northern New Jersey </option>
+                    <option value=119>NJ Englishtown </option>
+                    <option value=120>NJ Central New Jersev </option>
+                    <option value=121>NJ  Murray </option>
+                    <option value=122>NJ Savreville </option>
+                    <option value=123>NJ Southern New Jersey </option>
+                    <option value=124>NM ALBUQUERQUE </option>
+                    <option value=125>NV LAS VEGAS </option>
+                    <option value=126>NV RENO </option>
+                    <option value=127>NY Rochester </option>
+                    <option value=128>NY Buffalo </option>
+                    <option value=129>NY Syracuse </option>
+                    <option value=130>NY Long Island </option>
+                    <option value=131>NY ROCHESTER </option>
+                    <option value=132>NY Newburgh </option>
+                    <option value=133>NY Albany </option>
+                    <option value=134>OH Cincinnati-South </option>
+                    <option value=135>OH COLUMBUS </option>
+                    <option value=136>OH Dayton </option>
+                    <option value=137>OH Columbus </option>
+                    <option value=138>OH CLEVELAND </option>
+                    <option value=139>OH Akron-Canton </option>
+                    <option value=140>OH Cincinnati </option>
+                    <option value=141>OK OKLAHOMA CITY </option>
+                    <option value=142>OK TULSA </option>
+                    <option value=143>OR EUGENE </option>
+                    <option value=144>OR Portland </option>
+                    <option value=145>OR Portland West </option>
+                    <option value=146>OR Portland South </option>
+                    <option value=147>PA Pittoburgh </option>
+                    <option value=148>PA Bridge </option>
+                    <option value=149>PA Philadelphia </option>
+                    <option value=150>PA ALTOONA </option>
+                    <option value=151>PA Erie </option>
+                    <option value=152>PA PITTSBURGH NORTH </option>
+                    <option value=153>PA Philadelphia East (PA) </option>
+                    <option value=154>PA Scranton </option>
+                    <option value=155>PA York Springs </option>
+                    <option value=156>RI East Providence </option>
+                    <option value=157>SC COLUMBIA </option>
+                    <option value=158>SC Lexington </option>
+                    <option value=159>SC Charleston </option>
+                    <option value=160>SC Greenvile </option>
+                    <option value=161>SD Sioux Falls </option>
+                    <option value=162>TN Chattanooga </option>
+                    <option value=163>TN KNOXVILLE </option>
+                    <option value=164>TN Memphis </option>
+                    <option value=165>TN NASHVILLE </option>
+                    <option value=166>TX Abilene </option>
+                    <option value=167>TX AMARILLO </option>
+                    <option value=168>TX CORPUS CHRISTI </option>
+                    <option value=169>TX Austin </option>
+                    <option value=170>TX MCALLEN </option>
+                    <option value=171>TX EL PASO </option>
+                    <option value=172>TX Dallas/Ft. Worth </option>
+                    <option value=173>TX ABILENE </option>
+                    <option value=174>TX HOUSTON </option>
+                    <option value=175>TX Houston North </option>
+                    <option value=176>TX Fort Worth North </option>
+                    <option value=177>TX LONGVIEW </option>
+                    <option value=178>TX Lubbock </option>
+                    <option value=179>TX Permian Basin </option>
+                    <option value=180>TX Houston South (TH) </option>
+                    <option value=181>TX San Antonio </option>
+                    <option value=182>TX San Antonio-South </option>
+                    <option value=183>TX Dallas </option>
+                    <option value=184>UT Salt Lake City </option>
+                    <option value=185>VA RICHMOND </option>
+                    <option value=186>VA Culpeper </option>
+                    <option value=187>VA Fredericksburg-South </option>
+                    <option value=188>VA Northern Virginia </option>
+                    <option value=189>VA Roanoke </option>
+                    <option value=190>VA Pulaski </option>
+                    <option value=191>VA Suffolk </option>
+                    <option value=192>VA Tidewater </option>
+                    <option value=193>VT Burlington </option>
+                    <option value=194>WA Seattle (WA) </option>
+                    <option value=195>WA Spokane </option>
+                    <option value=196>WA Seattle South </option>
+                    <option value=197>WA Seattle </option>
+                    <option value=198>WI Appleton </option>
+                    <option value=199>WI Portage </option>
+                    <option value=200>WI Milwaukee </option>
+                    <option value=201>WV Buckhannon </option>
+                    <option value=202>WV Casper </option>
+                    <option value=203>WV Shady Spring </option>
+                    <option value=204>WY Casper </option>
+                </select>
+                </div>
+                <div class="row_block" id="aa_cont_sublot">
+                <p>Площадки |AA| Sublot</p>
+                <select name="AA_sublot" id="AA_sublot">
+                    <option value=1>AR Benton, AR BENTON,AR,72015</option>
+                    <option value=2>AR NORTH LITTLE ROCK, AR,72117</option>
+                    <option value=3>AZ 2299 W BROADWAY RD PHOENIX,AZ,85041</option>
+                    <option value=4>CA 11399 SANTA FE AVE E HESPERIA,CA,92345</option>
+                    <option value=5>CA 13901 SAN BERNARDINO AVE FONTANA,CA,92335</option>
+                    <option value=6>CA 14320 SOLEDAD CANYON RD SANTA CLARITA,CA,91387</option>
+                    <option value=7>CA 1903 BLINN AVE WILMINGTON,CA,90744</option>
+                    <option value=8>CA 2961 EAST LA JOLLA STREET ANAHEIM,CA,92806</option>
+                    <option value=9>CA 3600 PYRITE ST JURUPA VALLEY,CA,92509</option>
+                    <option value=10>CA 7245 LAUREL CANYON BLVD LOS ANGELES,CA,91605</option>
+                    <option value=11>CA 775 HARLEY KNOX BLVD PERRIS,CA,92571</option>
+                    <option value=12>CA At the North Hollywood (CA) branch 7245 LAUREL CANYON BLVD LOS ANGELES,CA,91605</option>
+                    <option value=13>CA CHULA VISTA,CA,91911</option>
+                    <option value=14>CA Fresno Offsite - 337 FRESNO,CA,93725</option>
+                    <option value=15>CA Harbor City, CA 90710 HARBOR CITY,CA,90710</option>
+                    <option value=16>CA LAWNDALE,CA,90260</option>
+                    <option value=17>CA Los Angeles IAA 18300 S VERMONT AVE GARDENA,CA,90248</option>
+                    <option value=18>CA NoHo 3 BURBANK,CA,91505</option>
+                    <option value=19>CA RIVERSIDE 3600 PYRITE ST RIVERSIDE,CA,92509</option>
+                    <option value=20>CA San Bernadino Off Site 137 SAN BERNARDINO,CA,92407</option>
+                    <option value=21>CA South Gate, CA SOUTH GATE,CA,90280</option>
+                    <option value=22>CO 1280 HIGHWAY 50 DELTA,CO,81416</option>
+                    <option value=23>CO COLFAX MOTORS - offiste DENVER,CO,80220</option>
+                    <option value=24>CT HARTFORD SOUTH 525 CHRISTIAN LANE NEW BRITAIN CT 06051</option>
+                    <option value=25>DE 417 OLD AIRPORT ROAD NEW CASTLE,DE,19720</option>
+                    <option value=26>DE DELMAR,DE,19940</option>
+                    <option value=27>FL 10950 NORMANDY BLVD JACKSONVILLE,FL,32221</option>
+                    <option value=28>FL 1208 17TH STREET EAST PALMETTO,FL,34221</option>
+                    <option value=29>FL 1857 US-331 N DEFUNIAK SPRINGS,FL,32433</option>
+                    <option value=30>FL 3005 CR 835 CLEWISTON,FL,33440</option>
+                    <option value=31>FL 6275 SW 196TH AVE FORT LAUDERDALE,FL,33332</option>
+                    <option value=32>FL 6522 OLD US-41 A TAMPA,FL,33619</option>
+                    <option value=33>FL 9801 BOGGY CREEK RD ORLANDO,FL,32824</option>
+                    <option value=34>FL ADESA-Off Site 11700 NEW KINGS ROAD JACKSONVILLE,FL,32219</option>
+                    <option value=35>FL BOCA RATON,FL,33487</option>
+                    <option value=36>FL COCONUT CREEK,FL,33063</option>
+                    <option value=37>FL FORT MYERS OFFSITE 749 850 PONDELLA RD NORTH FORT MYERS,FL,33903</option>
+                    <option value=38>FL HOLLYWOOD,FL,33023</option>
+                    <option value=39>FL Miami-North 2 Offsite 6275 SW 196TH AVE PEMBROKE PINES,FL,33332</option>
+                    <option value=40>GA Cochran, GA COCHRAN,GA,31014</option>
+                    <option value=41>GA Contact IAA branch MACON,GA,31204</option>
+                    <option value=42>GA NHRH OFF SITE 706 COMMERCE,GA,30529</option>
+                    <option value=43>GA Offsite - Lilburn GA 30047 LILBURN,GA,30047</option>
+                    <option value=44>IA AA Des Moines 1000 ARMSTRONG DRIVE DE SOTO,IA,50069</option>
+                    <option value=45>IA IAA Des Moines Offsite 3277 UTE AVE WAUKEE,IA,50263</option>
+                    <option value=46>IA Iowa Speedway CAT 534 NEWTON,IA,50208</option>
+                    <option value=47>L 4460 HIGHWAY 162 GRANITE CITY,IL,62040</option>
+                    <option value=48>IL 511 - MONTGOMERY 325 IL-31 S MONTGOMERY,IL,60538</option>
+                    <option value=49>IL Caseyville CASEYVILLE,IL,62232</option>
+                    <option value=50>IL CHICAGO, IL, 60632</option>
+                    <option value=51>IL IAA St. Louis Off-Site CENTREVILLE,IL,62207</option>
+                    <option value=52>IL MIDLOTHIAN,IL,60445</option>
+                    <option value=53>IL ONLINE EXCLUSIVE ENTERPRISE 2040 E. ALGONQUIN RD SCHAUMBURG,IL,60173</option>
+                    <option value=54>IN 1947 SOUTH COUNTY ROAD (SCR) 1240 E CROTHERSVILLE,IN,47229</option>
+                    <option value=55>IN 4300 OXFORD ST FORT WAYNE,IN,46806</option>
+                    <option value=56>IN IAA Indy Minnesota Street INDIANAPOLIS,IN,46241</option>
+                    <option value=57>KY 1825 SOUTH PRESTON HIGHWAY SHEPHERDSVILLE,KY,40165</option>
+                    <option value=58>KY 710 WOODFORD AVENUE BOWLING GREEN,KY,42101</option>
+                    <option value=59>LA 1043 ORO TRAIL RD CROWLEY,LA,70526</option>
+                    <option value=60>LA 29000 S FROST RD LIVINGSTON,LA,70754</option>
+                    <option value=61>LA 301 MALAPART RD LAFAYETTE,LA,70507</option>
+                    <option value=62>LA 415 HWY 93 NORTH SCOTT,LA,70583</option>
+                    <option value=63>LA IAA CAT Baton Rouge - Carville 5978 HIGHWAY 75 CARVILLE,LA,70721</option>
+                    <option value=64>LA Jennings Off-Site #760 JENNINGS,LA,70546</option>
+                    <option value=65>MA Insurance Auto Auctions - Templeton2 411 BALDWINVILLE RD TEMPLETON,MA,01468</option>
+                    <option value=66>MA LANCASTER,MA,01523</option>
+                    <option value=67>MD 7131 VIRGINIA MANOR CT LAUREL,MD,20707</option>
+                    <option value=68>MD Dundalk Offsite 770 BALTIMORE,MD,21213</option>
+                    <option value=69>MD White Plains Aux Lot 4840 CRAIN HIGHWAY WHITE PLAINS,MD,20695</option>
+                    <option value=70>ME COPART 40 HOLMES ROAD SCARBOROUGH ME 04074</option>
+                    <option value=71>MI ADESA Great Lakes 573 SOUTH TUSCOLA ROAD BAY CITY,MI,48708</option>
+                    <option value=72>MI Detroit B & G Lot-8100 lynch rd 9100 LYNCH RD. DETROIT,MI,48234</option>
+                    <option value=73>MI Grand Rapids Reed & Hoppes 2661 EAST GRAND RIVER AVE. PORTLAND, MI, 48875</option>
+                    <option value=74>MI Marine City, MI MARINE CITY,MI,48039</option>
+                    <option value=75>MI OFFSITE - Melvindale MI 48122 MELVINDALE,MI,48122</option>
+                    <option value=76>MN 13289 25TH AVE NW RICE,MN,56367</option>
+                    <option value=77>MN 1336 JACKSON ST SAINT PAUL,MN,55117</option>
+                    <option value=78>MN 2975 PARTRIDGE RD ROSEVILLE,MN,55113</option>
+                    <option value=79>MN 3300 150TH STREET EAST FARIBAULT,MN,55021</option>
+                    <option value=80>MN IAA RED WING RED WING,MN,55066</option>
+                    <option value=81>MO KANSAS CITY,MO,64129</option>
+                    <option value=82>MO Squires Towing AFFTON,MO,63123</option>
+                    <option value=83>MS 100 BEASLEY RD JACKSON,MS,39206</option>
+                    <option value=84>MS IAA Byram 7670 SIWELL ROAD BYRAM,MS,39272</option>
+                    <option value=85>MT 4U COLLISION CENTER 23 8TH AVE NE CONRAD,MT,59425</option>
+                    <option value=86>NC 6500 ROZZELLES FERRY RD CHARLOTTE,NC,28214</option>
+                    <option value=87>NC DUNN - 747 4129 NC-242 DUNN,NC,28334</option>
+                    <option value=88>NC OFFSITE Monroe, NC 28110 MONROE,NC,28112</option>
+                    <option value=89>NC RICHLANDS,NC,28574</option>
+                    <option value=90>NC TKU AUTO SALES LLC 1204 N CHURCH ST BURLINGTON,NC,27217</option>
+                    <option value=91>NE 13909 238TH STREET GREENWOOD,NE,68366</option>
+                    <option value=92>NE iaa omaha north lot OMAHA,NE,68110</option>
+                    <option value=93>NH 75 LOWELL RD SALEM,NH,03079</option>
+                    <option value=94>NH Kingston, NH 03848 KINGSTON,NH,03848</option>
+                    <option value=95>NH Salem 199 LAWRENCE RD SALEM,NH,03079</option>
+                    <option value=96>NJ 230 PENSION RD MANALAPAN,NJ,07726</option>
+                    <option value=97>NJ 700 FEDERAL BLVD CARTERET,NJ,07008</option>
+                    <option value=98>NJ 985 STATE ROUTE 57 PORT MURRAY,NJ,07865</option>
+                    <option value=99>NJ At the Central New Jersey (NJ) branch 426 TEXAS ROAD MORGANVILLE,NJ,07751</option>
+                    <option value=100>NJ Englishtown CAT Yard #611 230 PENSION RD ENGLISHTOWN,NJ,07726</option>
+                    <option value=101>NJ New Brunswick, NJ 08901 NEW BRUNSWICK,NJ,08901</option>
+                    <option value=102>NJ PARKWAY AUTO 578 MEMORIAL PKWY PHILLIPSBURG,NJ,08865</option>
+                    <option value=103>NJ Robbinsville, NJ ROBBINSVILLE,NJ,08691</option>
+                    <option value=104>NM Albuquerque IAA Branch 4400 BROADWAY BLVD SE ALBUQUERQUE,NM,87105</option>
+                    <option value=105>NY 115 PORT WATSON ST CORTLAND,NY 13045</option>
+                    <option value=106>NY 1210 KINGS ROAD SCHENECTADY,NY,12303</option>
+                    <option value=107>NY 21 RICE CT MEDFORD,NY,11763</option>
+                    <option value=108>NY 366 VULCAN STREET BUFFALO,NY,14207</option>
+                    <option value=109>NY 71 PECONIC AVE MEDFORD,NY,11763</option>
+                    <option value=110>NY Binghamton, NY 13903 BINGHAMTON,NY,13903</option>
+                    <option value=111>NY BUFFALO,NY,14227</option>
+                    <option value=112>NY Drive Auto Sales 656 PINE AIRE DRIVE BAYSHORE,NY,11706</option>
+                    <option value=113>NY HL2 EAST ROCHESTER,NY,14445</option>
+                    <option value=114>NY LI - Calverton Airport 613 901 BURMAN BLVD CALVERTON,NY,11933</option>
+                    <option value=115>NY Monticello-672 MONTICELLO,NY,12701</option>
+                    <option value=116>NY small town auto MONTOUR FALLS,NY,14865</option>
+                    <option value=117>NY STATEN ISLAND,NY,10314</option>
+                    <option value=118>NY WEST NYACK,NY,10994</option>
+                    <option value=119>OH AA Stimmel Road 420 STIMMEL ROAD COLUMBUS,OH,43223</option>
+                    <option value=120>OH Amelia IAA Cinci-South 1736 LINDALE MT. HOLLY RD AMELIA,OH,45102</option>
+                    <option value=121>OH At the Dayton (OH) branch 400 CHEROKEE DR DAYTON,OH,45417</option>
+                    <option value=122>OH Offsite - Carrollton OH 44615 CARROLLTON,OH,44615</option>
+                    <option value=123>OH Offsite - Cuyahoga Falls OH 44223 CUYAHOGA FALLS,OH,44223</option>
+                    <option value=124>OH Offsite - Willoughby OH 44094 WILLOUGHBY,OH,44094</option>
+                    <option value=125>OH Offsite -Elyria, OH 44035 ELYRIA,OH,44035</option>
+                    <option value=126>OH Tallmadge,OH 44278 TALLMADGE,OH,44278</option>
+                    <option value=127>OH Vermillion - North Ford Lot 8149 W. ERIE VERMILION,OH,44089</option>
+                    <option value=128>OR EUGENE,OR,97402</option>
+                    <option value=129>OR IAA St John Offiste 8524 N CRAWFORD AVE PORTLAND,OR,97203</option>
+                    <option value=130>OR PORTLAND WEST 10498 N VANCOUVER WAY PORTLAND,OR,97217</option>
+                    <option value=131>PA IAA Bridgeport - Philadelphia East 7777 STATE RD PHILADELPHIA,PA,19136</option>
+                    <option value=132>PA R&J AUTOMOTIVE COMPANY LLC - Offsite ESSINGTON,PA,19029</option>
+                    <option value=133>SC 422 SCUFFLETOWN RD SIMPSONVILLE,SC,29681</option>
+                    <option value=134>SC Offsite - York NC 29745 YORK,SC,29745</option>
+                    <option value=135>SD ALAN'S AUTO RECYCLING 1800 SEGER DRIVE RAPID CITY SD 57701</option>
+                    <option value=136>TN Madison, TN MADISON,TN,37115</option>
+                    <option value=137>TN Nashville, TN NASHVILLE,TN,37211</option>
+                    <option value=138>TX 11022 MESA DRIVE HOUSTON,TX,77078</option>
+                    <option value=139>TX 1107 BROADWAY PASADENA,TX,77506</option>
+                    <option value=140>TX 12100 WEST LITTLE YORK RD HOUSTON,TX,77041</option>
+                    <option value=141>TX 1528 STATE HIGHWAY 71 COLUMBUS,TX,78934</option>
+                    <option value=142>TX 16602 E HARDY RD HOUSTON,TX,77032</option>
+                    <option value=143>TX 18600 WILBER ROAD HAMSHIRE,TX,77622</option>
+                    <option value=144>TX 23010 FIREFLY RD FLORENCE,TX,76527</option>
+                    <option value=145>TX 3748 MCPHERSON DR JUSTIN,TX,76247</option>
+                    <option value=146>TX 5000 I-10 SEALY,TX,77474</option>
+                    <option value=147>TX 711 RANKIN ROAD HOUSTON,TX,77073</option>
+                    <option value=148>TX 8119 MILLER ROAD NO. 3 HOUSTON,TX,77049</option>
+                    <option value=149>TX AUSTIN - IAA 2191 HIGHWAY 21 WEST DALE,TX,78616</option>
+                    <option value=150>TX Beaumont Hwy_CAT Yard 17011 BEAUMONT HWY HOUSTON,TX,77049</option>
+                    <option value=151>TX CAT Houston Oates Rd. 1 4605 OATES ROAD HOUSTON,TX,77013</option>
+                    <option value=152>TX CAT YARD 3 7575 FM 2004 HITCHCOCK,TX,77563</option>
+                    <option value=153>TX CAT YARD 5 12100 WEST LITTLE YORK RD HOUSTON,TX,77041</option>
+                    <option value=154>TX CAT YARD D 18100 US-59 BUSINESS NEW CANEY,TX,77357</option>
+                    <option value=155>TX GRAND PRAIRIE,TX,75050</option>
+                    <option value=156>TX Offsite Offsite - Dallas TX 75229 DALLAS,TX,75229</option>
+                    <option value=157>TX SAN ANTONIO-SOUTH 11275 SOUTH ZARZAMORA SAN ANTONIO,TX,78224</option>
+                    <option value=158>TX SAN BENITO,TX,78586</option>
+                    <option value=159>VA BRISTOL,VA,24202</option>
+                    <option value=160>VA Doswell - 711 DOSWELL, VA, 23047</option>
+                    <option value=161>VA IAA CULPEPER 15201 REVIEW RD CULPEPER,VA,22701</option>
+                    <option value=162>VA IAA Pulaski 7054 SALLING BRANCH ROAD FAIRLAWN,VA,24141</option>
+                    <option value=163>VA MANASSAS,VA,20111</option>
+                    <option value=164>VA Montvale Yard #724 1576 QUARTERWOOD RD MONTVALE,VA,24122</option>
+                    <option value=165>VA OFFSITE - Chesapeake VA 23321 CHESAPEAKE,VA,23321</option>
+                    <option value=166>VA Premium Auto Brokers VIRGINIA BEACH,VA,23464</option>
+                    <option value=167>VT 304 COLCHESTER ROAD ESSEX JUNCTION,VT,05452</option>
+                    <option value=168>WA IAA Puyallup 15801 110TH AVE E PUYALLUP,WA,98374</option>
+                    <option value=169>WA IAA TUKWILA OFFSITE 8801 E MARGINAL WAY S TUKWILA,WA,98108</option>
+                    <option value=170>WA Vancouver IAA offsite 15615 NE FOURTH PLAIN BLVD VANCOUVER, WA, 98682</option>
+                    <option value=171>WI 7213 US HIGHWAY 41 CALEDONIA,WI,53108</option>
+                    <option value=172>WI W10890 SCHOOL RD FREMONT,WI,54940</option>
+                </select>
+            </div>
+            <div class="row_block">
+                <p>Состояние техники</p>
+                <div class="checkbox_block">
+                    <input type="checkbox" name="health_auto" value="1" id="total">
+                    <label for="total">Тотал</label>
+                    <input type="checkbox" name="health_auto" value="2" id="pending">
+                    <label for="total">Pending</label>
+                </div>
+        
+            </div>
+            <div id="buy_auto" class="row_block">
+                <p>Сколько авто приобретено за год</p>
+                <select name="buy_auto_select" id="buy_auto_select">
+                    <option value="1">1 Авто</option>
+                    <option value="2">2 и более авто</option>
+                </select>
+            </div>      
+        </div>
+        <div class="result_block">
+            <div class="row_block">
+                <h2 class="zag">Результат</h2>
+            </div>
+            <div class="row_block"><p>Цена авто</p><p class="result_label" id="price_car_result"></p></div>
+            <div class="row_block"><p>Аукционный сбор</p><p class="result_label" id="aukcion_sbor"></p></div>
+            <div class="row_block"><p>Порт отправки</p><p class="result_label" id="port_deliver"></p></div>
+            <div class="row_block"><p>Доставка до порта</p><p class="result_label" id="delivery_by_port"></p></div>
+            <div class="row_block"><p>Доставка до Москвы</p><p class="result_label" id="delivery_to_moscow"></p></div>
+            <div class="row_block"><p>Расходы в Литве</p><p class="result_label" id="expenses_of_litva"></p></div>
+            <div class="row_block"><p id="title_tam_posh">Таможня и пошлина</p><p class="result_label" id="sale_tam"></p></div>
+            <div class="row_block"><p>Услуги Декларанта /таможни/СВХ</p><p class="result_label" id="deklar"></p></div>
+            <div class="row_block"><p>Утиль. сбор в РБ</p><p class="result_label" id="result_util"></p></div>
+            <div class="row_block" id="row_block_exp"><p>Экспортные документы</p><p class="result_label" id="exp"></p></div>
+            <div class="row_block" id="row_block_sopr"><p>Установленная ставка</p><p class="result_label" id="sopr"></p></div>
+            <div id="akciz_block" class="row_block"><p>Акциз</p><p id="result_akciz" class="result_label"></p></div>
+            <div class="row_block"><p>Наши услуги</p><p class="result_label" id="our_services"></p></div>
+            <div class="row_block"><p id="title_sbkts">СБКТС</p><p class="result_label" id="sbkts"></p></div>
+            <div class="row_block"><p>Комиссия за перевод денег в США + % СВИФТ</p><p id="komissiya"></p></div>
+            <div class="row_block" id='itog'>
+                <h2 id="result_itogo" class="zag">Итого</h2>
+            </div>
+            <button id="button_print" class="button_print">Распечатать и сохранить</button>
+        </div>
+    </div>
+    <script src="/static/js/index.js"></script>
+</body>
+</html>
+{% endblock %}

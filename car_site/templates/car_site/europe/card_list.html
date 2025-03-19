@@ -1,0 +1,121 @@
+{% extends "car_site/base.html" %}
+{% load static %}
+{% block content %}
+
+    <main class="container-fluid">
+        <div class="title_search row justify-content-between align-items-center">
+            <div class="box_search col form">
+                <i class="fa fa-search"></i>
+                <form class="d-flex" role="search" action="{% url 'europe_list' %}" method="get">
+                    <i class="fa fa-search"></i>
+                    <input type="text" class="form-control form-input form_search rounded-3"
+                           placeholder="Поиск по таблице..." name="q">
+                </form>
+            </div>
+        </div>
+        <div class="row custom_table rounded-3">
+            <table class="table">
+                <thead class="table table_head">
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="second-col" scope="col">Марка и модель</th>
+                    <th scope="col">VIN номер</th>
+                    <th scope="col">Страна покупки</th>
+                    <th scope="col">Дата покупки</th>
+                    <th scope="col">Дата поступления денег</th>
+                    <th scope="col">Дата прибытия в Беларусь</th>
+                    <th scope="col">Дата прибытия до Москвы</th>
+                    <th scope="col">Фото</th>
+                    <th scope="col">Квитанция</th>
+                    <th scope="col">Оплата на аукцион</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in europecard_list %}
+                    <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td class="fw second-col">
+                        <a href="{% url 'europe_card' entry.id %}">
+                            {{ entry.model }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ entry.vin_number }}
+                    </td>
+                    <td>
+                        {{ entry.platforms.country }}
+                    </td>
+                    <td>
+                        {{ entry.tracking.payment_date }}
+                    </td>
+                    <td>
+                        {{ entry.tracking.money_date }}
+                    </td>
+                    <td>
+                        {{ entry.tracking.belarus_date }}
+                    </td>
+                    <td>
+                        {{ entry.tracking.moscow_date }}
+                    </td>
+                    <td>
+                        <a href="{% url 'europe_card' entry.id %}">
+                            {% if entry.photos.count or entry.belarus_photos.count %}
+                                <img src="{% static 'img/photo.svg' %}" alt="title">
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+
+                        {% if entry.files.count %}
+                            <a href="{% url 'europe_card' entry.id %}"><img src="{% static 'img/kvit.svg' %}" alt="title"></a>
+                        {% else %}
+                            <a class="add_kvit" href="{% url 'europe_card' entry.id %}"><span>+</span></a>
+                        {% endif %}
+                    </td>
+                    <td class="pay_block">
+                        <div class="row price">
+                            <p>{{ entry.payments.auction_price }} €</p>
+                            {% if entry.payments.payment_flag %}
+                                <span class="pay_yes">Опл.</span>
+                            {% else %}
+                                <span class="pay_no">Не опл.</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+            <nav class="row pag" aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                    {% for page_number in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_number == page_obj.number %}active{% endif %}">
+                            <a href="?page={{ page_number }}" class="page-link">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </main>
+{% endblock %}

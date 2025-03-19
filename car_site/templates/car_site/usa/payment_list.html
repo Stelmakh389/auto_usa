@@ -1,0 +1,149 @@
+{% extends "car_site/base.html" %}
+
+{% load static %}
+{% block content %}
+    <main class="container-fluid">
+        <div class="title_search row justify-content-between align-items-center">
+            <form class="box_search col form" role="search" action="{% url 'europe_payment_list' %}" method="get">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input form_search rounded-3"
+                       placeholder="Поиск по таблице..." name="q">
+            </form>
+        </div>
+
+        <div class="row custom_table rounded-3">
+            <table class="table">
+                <thead class="table table_head">
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="second-col" scope="col">Марка и модель</th>
+                    <th scope="col">VIN номер</th>
+                    <th scope="col">Аукцион</th>
+                    <th scope="col">Номер лота</th>
+                    <th scope="col">Название учетки</th>
+                    <th scope="col">Дата покупки</th>
+                    <th scope="col">Цена авто</th>
+                    <th scope="col">Аукционный сбор</th>
+                    <th scope="col">Комиссия за перевод денег в США + % СВИФТ</th>
+                    <th scope="col">Авто + аукц. сбор + комиссия</th>
+                    <th scope="col">Доставка до порта</th>
+                    <th scope="col">Доставка до Москвы</th>
+                    <th scope="col">Расходы в Литве</th>
+                    <th scope="col">Оплата доставки</th>
+                    <th scope="col">Иные платежи</th>
+                    <th scope="col">Комментарий к иным платежам</th>
+                    <th scope="col">Таможенная пошлина</th>
+                    <th scope="col">Услуги декларанта / таможни / СВХ</th>
+                    <th scope="col">Утиль сбор в РБ</th>
+                    <th scope="col">Установленная ставка на льготника</th>
+                    <th scope="col">Итого ставка + пошлина</th>
+                    <th scope="col">Наши услуги</th>
+                    <th scope="col">СБКТС + ЭПТС</th>
+                    <th scope="col">ЭПСМС</th>
+                    <th scope="col">Акциз</th>
+                    <th scope="col">Штрафы аукциона</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in usacard_list %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <td class="fw second-col">
+                            <a href="{% url 'usa_card' entry.id %}">
+                                {{ entry.model }}
+                            </a>
+                        </td>
+                        <td>{{ entry.vin_number }}</td>
+                        <td>{{ entry.auction_data.auction.name }}</td>
+                        <td>
+                            <a href="{{ entry.auction_data.lot_link }}">{{ entry.auction_data.lot_number }}</a>
+                        </td>
+                        <td>{{ entry.auction_data.user_name }}</td>
+                        <td>{{ entry.auction_data.pay_date }}</td>
+                        <td>{{ entry.payment.price}} $</td>
+                        <td>{{ entry.payment.auction_price }} $</td>
+                        <td>{{ entry.payment.commission}} $</td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.payment.car_auct_price }}$</p>
+                                {% if entry.payment.payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ entry.payment.port_price}} $</td>
+                        <td>{{ entry.payment.moscow_price }} $</td>
+                        <td>{{ entry.payment.expenses_litva }} $</td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.payment.delivery_price}} $</p>
+                                {% if entry.payment.delivery_payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                         <td>{{ entry.payment.extra_price }} $</td>
+                        <td>{{ entry.payment.comment }}</td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.payment.tax_price}} $</p>
+                                {% if entry.payment.tax_payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ entry.payment.tax }} $</td>
+                        <td>{{ entry.payment.tax_util }} $</td>
+                        <td> {{ entry.payment.tax_rate }} $</td>
+                        <td> {{ entry.payment.tax_sum }} $</td>
+                        <td>{{ entry.payment.tax_service }} $</td>
+                        <td>{{ entry.payment.sbkts_epts }} $</td>
+                        <td>{{ entry.payment.epsms_moto }} $</td>
+                        <td>{{ entry.payment.excise }} $</td>
+                        <td>{{ entry.payment.penalty }} $</td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+            <nav class="row pag" aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                    {% for page_number in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_number == page_obj.number %}active{% endif %}">
+                            <a href="?page={{ page_number }}" class="page-link">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </main>
+{% endblock %}

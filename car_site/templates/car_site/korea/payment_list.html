@@ -1,0 +1,127 @@
+{% extends "car_site/base.html" %}
+
+{% load static %}
+{% block content %}
+    <main class="container-fluid">
+        <div class="title_search row justify-content-between align-items-center">
+            <form class="box_search col form" role="search" action="{% url 'korea_payment_list' %}" method="get">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input form_search rounded-3"
+                       placeholder="Поиск по таблице..." name="q">
+            </form>
+        </div>
+
+        <div class="row custom_table rounded-3">
+            <table class="table">
+                <thead class="table table_head">
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="second-col" scope="col">Марка и модель</th>
+                    <th scope="col">VIN номер</th>
+                    <th scope="col">Дата покупки</th>
+                    <th scope="col">Стоимость авто</th>
+                    <th scope="col">Итого авто + экспортные документы</th>
+                    <th scope="col">Доставка из ВДК до конечного пункта </th>
+                    <th scope="col">Таможенная пошлина</th>
+                    <th scope="col">Установленная ставка</th>
+                    <th scope="col">Итого таможня + ставка</th>
+                    <th scope="col">Услуги декларанта / Таможни / СВХ</th>
+                    <th scope="col">Утиль сбор</th>
+                    <th scope="col">Наши услуги</th>
+                    <th scope="col">СБКТС + ЭПТС</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in koreacard_list %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <td class="fw second-col">
+                            <a href="{% url 'korea_card' entry.id %}">
+                                {{ entry.model }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ entry.vin_number }}
+                        </td>
+                        <td>
+                            {{ entry.pay_date }}
+                        </td>
+                        <td>
+                            {{ entry.korea_payment.car_price }} $
+                        </td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.korea_payment.total_price }}$</p>
+                                {% if entry.korea_payment.payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ entry.korea_payment.delivery_price }} ₽</td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.korea_payment.tax_price }} $</p>
+                                {% if entry.korea_payment.tax_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                         <td>{{ entry.korea_payment.tax}} $</td>
+                        <td class="pay_block">
+                            <div class="row price">
+                                <p>{{ entry.korea_payment.tax_payment}} $</p>
+                                {% if entry.korea_payment.tax_payment_flag %}
+                                    <span class="pay_yes">Опл.</span>
+                                {% else %}
+                                    <span class="pay_no">Не опл.</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td> {{ entry.korea_payment.tax_service }} ₽</td>
+                        <td>{{ entry.korea_payment.tax_util }} ₽</td>
+                        <td>{{ entry.korea_payment.our_service }} ₽</td>
+                        <td>{{ entry.korea_payment.sbkts_epts }} ₽</td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+            <nav class="row pag" aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                    {% for page_number in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_number == page_obj.number %}active{% endif %}">
+                            <a href="?page={{ page_number }}" class="page-link">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </main>
+{% endblock %}

@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    command: sh -c "python manage.py collectstatic --no-input &&
+                    python manage.py makemigrations &&
+                    python manage.py migrate &&
+                    gunicorn car_auction.wsgi:application --workers=4 --reload --max-requests=1000 --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./car_site:/app/car_site
+      - ./car_auction:/app/car_auction
+      - /media:/app/media
+      - ./static:/app/static
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    depends_on:
+      - postgres
+
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.prod
+    volumes:
+      - .docker_data/postgres:/var/lib/postgresql/data
+      - ./data/:/tmp/data/
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

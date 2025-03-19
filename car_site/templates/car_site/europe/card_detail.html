@@ -1,0 +1,542 @@
+{% extends "car_site/base.html" %}
+{% load static %}
+{% block content %}
+
+    <main class="container-fluid">
+
+        <div class="row p-2">
+            <h1>{{ card.model }}</h1>
+            <p>VIN: {{ card.vin_number }}</p>
+        </div>
+        <div class="row p-2">
+
+            <div class="col-xxl-8">
+                <div class="row">
+                    <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                        <div class="mb-4 border-bottom border-secondary-subtle row p-2 justify-content-center fw-bold fs-4">
+                            Характеристики
+                        </div>
+                        {% if card.vehicle_type %}
+                            <div class="row">
+                                <div class="col">Тип техники:</div>
+                                <div class="col text-end">{{ card.vehicle_type }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.engine_type %}
+                            <div class="row">
+                                <div class="col">Тип двигателя:</div>
+                                <div class="col text-end">{{ card.engine_type }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.capacity %}
+                            <div class="row">
+                                <div class="col">Объем двигателя:</div>
+                                <div class="col text-end">{{ card.capacity }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.age %}
+                            <div class="row">
+                                <div class="col">Возраст техники:</div>
+                                <div class="col text-end">{{ card.age }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.cnt_auto %}
+                            <div class="row">
+                                <div class="col">Кол-во авто, купленных за год:</div>
+                                <div class="col text-end">{{ card.cnt_auto }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.quadrupole %}
+                            <div class="row">
+                                <div class="col">Объем двигателя (Снегоход или Квадроцикл):</div>
+                                <div class="col text-end">{{ card.quadrupole }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.motor_power %}
+                            <div class="row">
+                                <div class="col">Объем двигателя (Мотоцикл):</div>
+                                <div class="col text-end">{{ card.motor_power }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.massa %}
+                            <div class="row">
+                                <div class="col">Масса техники (Пикап):</div>
+                                <div class="col text-end">{{ card.massa }}</div>
+                            </div>
+                        {% endif %}
+                        {% if card.power %}
+                            <div class="row">
+                                <div class="col">Кол-во л. сил (Мотоцикл):</div>
+                                <div class="col text-end">{{ card.power }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                        <div class="mb-4 border-bottom border-secondary-subtle row p-2 justify-content-center fw-bold fs-4">
+                            Отслеживание
+                        </div>
+                        <div class="row">
+                            <div class="col">Дата оплаты:</div>
+                            <div class="col text-end">{{ card.tracking.payment_date }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Дата поступления денег:</div>
+                            <div class="col text-end">{{ card.tracking.money_date }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Дата прибытия в Москву:</div>
+                            <div class="col text-end">{{ card.tracking.moscow_date }}</div>
+                        </div>
+                    </div>
+                    <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                        <div class="mb-4 border-bottom border-secondary-subtle row p-2 justify-content-center fw-bold fs-4">
+                            Данные площадки
+                        </div>
+                        <div class="row">
+                            <div class="col">Дата покупки:</div>
+                            <div class="col text-end">{{ card.platforms.purchase_date }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Страна:</div>
+                            <div class="col text-end">{{ card.platforms.country }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-cols-xxl-5 row-cols-xl-7 row-cols-lg-6 row-cols-md-5 row-cols-sm-4 row-cols-2">
+                    {% if card.photos.all %}
+                        <div class="col-sm mt-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                             title="Посмотреть все фото">
+                            <img data-bs-toggle="modal" data-bs-target="#photoModal"
+                                 src="/media/{{ card.photos.first.photo }}"
+                                 class="img-fluid lig rounded-3">
+
+                            <p class="text-center mt-2">Фото осмотра</p>
+                            <!-- Modal -->
+                            <div class="modal fade" id="photoModal" tabindex="-1"
+                                 aria-labelledby="photoModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div id="carouselExample" class="carousel slide">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active">
+                                                    <img src="/media/{{ card.photos.first.photo }}" class="img-fluid">
+                                                </div>
+                                                {% for o in card.photos.all %}
+                                                    {% if card.photos.first.photo != o.photo %}
+                                                        <div class="carousel-item">
+                                                            <img src="/media/{{ o.photo }}" class="img-fluid">
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                    data-bs-target="#carouselExample" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button"
+                                                    data-bs-target="#carouselExample" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if card.belarus_photos.all %}
+                        <div class="col-sm mt-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                             title="Посмотреть все фото">
+                            <img data-bs-toggle="modal" data-bs-target="#belarusModal"
+                                 src="/media/{{ card.belarus_photos.first.photo }}"
+                                 class="img-fluid lig rounded-3">
+
+                            <p class="text-center mt-2">Фото из Беларуси</p>
+                            <!-- Modal -->
+                            <div class="modal fade" id="belarusModal" tabindex="-1"
+                                 aria-labelledby="belarusModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div id="carouselExample" class="carousel slide">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active">
+                                                    <img src="/media/{{ card.belarus_photos.first.photo }}"
+                                                         class="img-fluid">
+                                                </div>
+                                                {% for o in card.belarus_photos.all %}
+                                                    {% if card.belarus_photos.first.photo != o.photo %}
+                                                        <div class="carousel-item">
+                                                            <img src="/media/{{ o.photo }}" class="img-fluid">
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                    data-bs-target="#carouselExample" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button"
+                                                    data-bs-target="#carouselExample" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+                </div>
+                <div class="row">
+                    {% if card.euro_documents.all %}
+                        <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                            <div class="row">
+                                <div class="mb-4 row p-0 mb-0 mt-2 ms-0 justify-content-center align-items-center mt-1 border-bottom border-secondary-subtle">
+                                    <p class="col-auto fs-4 fw-bold">Таможенные документы</p>
+                                </div>
+                                <div class="row">
+                                    {% for file in card.euro_documents.all %}
+                                        {% if file.file_type == 'pdf' %}
+                                            <div class="col-auto mb-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                 title="Посмотреть">
+                                                <img data-bs-toggle="modal" data-bs-target="#exampleModalpdf"
+                                                     src="{% static '/img/pdf.svg' %}"
+                                                     class="img-fluid doc rounded-3 card-document">
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleModalpdf" tabindex="-1"
+                                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <iframe src="/media/{{ file.file }}"
+                                                                    height="600px"></iframe>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <a href="/media/{{ file.file }}" class="col-auto mb-3"
+                                               data-toggle="lightbox" data-bs-toggle="tooltip" data-bs-placement="top"
+                                               title="Посмотреть">
+                                                <img src="/media/{{ file.file }}"
+                                                     class="img-fluid doc rounded-3 card-document border border-secondary">
+                                            </a>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                        <div class="row">
+                            <div class="mb-4 row p-0 mb-0 mt-2 ms-0 justify-content-center align-items-center mt-1 border-bottom border-secondary-subtle">
+                                <p class="col-auto fs-4 fw-bold">Квитанции</p>
+                                <p class="col-auto fs-12 text-danger">Вы сможете загрузить до 8 файлов</p>
+                            </div>
+                            <div class="row" id="documentFile">
+
+                                {% for file in card.files.all %}
+                                    {% if file.file_type == 'pdf' %}
+                                        <div class="col-auto mb-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                                             title="Посмотреть">
+                                            <img data-bs-toggle="modal" data-bs-target="#exampleModalpdf"
+                                                 src="{% static '/img/pdf.svg' %}"
+                                                 class="img-fluid doc rounded-3 card-document">
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="exampleModalpdf" tabindex="-1"
+                                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <iframe src="/media/{{ file.file }}"
+                                                                height="600px"></iframe>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <a href="/media/{{ file.file }}" class="col-auto mb-3"
+                                           data-toggle="lightbox" data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Посмотреть">
+                                            <img src="/media/{{ file.file }}"
+                                                 class="img-fluid doc rounded-3 card-document border border-secondary">
+                                        </a>
+                                    {% endif %}
+
+                                {% endfor %}
+                                {% if card.files.all.count < 8 %}
+                                    <div style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#upload-form"
+                                         class="plus_block col-auto mb-3 justify-content-center align-items-center align-self-center ">
+                                        <img src="{% static '/img/plus.svg' %}" alt="">
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="upload-form" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" enctype="multipart/form-data"
+                                          action="{% url 'europe_card' card.id %}">
+                                        <h1>Загрузите квитанции</h1>
+                                        {% if form.errors %}
+                                            <p>Вы загрузили более 8 файлов</p>
+                                        {% endif %}
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="formFileMultiple" class="form-label text-danger fs-8">Не
+                                                более 8 файлов или фото</label>
+                                            <input class="form-control" type="file" id="formFileMultiple"
+                                                   name="file" multiple accept="image/png, image/jpeg, image/jpg, .pdf">
+                                        </div>
+                                        <button class="btn upload_button fw-bold form-control" id="submitForm" style="display: none">
+                                            Загрузить
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xxl-4">
+                <div class="row">
+                    <div class="col m-2 bg-white rounded-3 pb-4">
+                        <div class="row border-bottom border-secondary-subtle p-2 mb-4 justify-content-center fw-bold fs-4">
+                            Платежи
+                        </div>
+                        {% if card.payments.price_brutto %}
+                            <div class="row">
+                                <div class="col">Брутто:</div>
+                                <div class="col text-end">{{ card.payments.price_brutto }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.price_netto %}
+                            <div class="row">
+                                <div class="col">Нетто:</div>
+                                <div class="col text-end">{{ card.payments.price_netto }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.price %}
+                            <div class="row">
+                                <div class="col">Комиссия за сопровождение сделки:</div>
+                                <div class="col text-end">{{ card.payments.price }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.auction_price %}
+                            <div class="row">
+                                <div class="col">Итого авто + комиссия:</div>
+                                <div class="col price_block text-end">
+                                    <div class="row price">
+                                        {% if card.payments.payment_flag %}
+                                            <span class="pay_yes">Опл.</span>
+                                        {% else %}
+                                            <span class="pay_no">Не опл.</span>
+                                        {% endif %}
+                                        <p class="col">{{ card.payments.auction_price }}€</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        {% endif %}
+                        {% if card.payments.inspection %}
+                            <div class="row">
+                                <div class="col">Осмотр авто:</div>
+                                <div class="col text-end">{{ card.payments.inspection }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.expenses %}
+                            <div class="row">
+                                <div class="col">Расходы по оплате в Европу</div>
+                                <div class="col text-end">{{ card.payments.expenses }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.moscow_delivery_price %}
+                            <div class="row">
+                                <div class="col">Доставка до Москвы:</div>
+                                <div class="col text-end">{{ card.payments.moscow_delivery_price }}€</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.tax_price %}
+                            <div class="row">
+                                <div class="col">Таможенная пошлина:</div>
+                                <div class="col price_block text-end">
+                                    <div class="row price">
+                                        {% if card.payments.tax_flag %}
+                                            <span class="pay_yes">Опл.</span>
+                                        {% else %}
+                                            <span class="pay_no">Не опл.</span>
+                                        {% endif %}
+                                        <p class="col">{{ card.payments.tax_price }}$</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.tax %}
+                            <div class="row">
+                                <div class="col">Установленная ставка:</div>
+                                <div class="col text-end">{{ card.payments.tax }}$</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.tax_payment %}
+                            <div class="row">
+                                <div class="col">Итого таможня + ставка:</div>
+                                <div class="col price_block text-end">
+                                    <div class="row price">
+                                        {% if entry.payments.tax_payment_flag %}
+                                            <span class="pay_yes">Опл.</span>
+                                        {% else %}
+                                            <span class="pay_no">Не опл.</span>
+                                            <p class="col">{{ card.payments.tax_payment }} $</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.tax_service %}
+                            <div class="row">
+                                <div class="col">Услуги декларанта / Таможни / СВХ:</div>
+                                <div class="col text-end">{{ card.payments.tax_service }} ₽</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.tax_util %}
+                            <div class="row">
+                                <div class="col">Утиль. сбор в РБ:</div>
+                                <div class="col text-end">{{ card.payments.tax_util }} ₽</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.our_service %}
+                            <div class="row">
+                                <div class="col">Наши услуги:</div>
+                                <div class="col text-end">{{ card.payments.our_service }} ₽</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.sbkts_epts %}
+                            <div class="row">
+                                <div class="col">СБКТС+ЭПТС:</div>
+                                <div class="col text-end">{{ card.payments.sbkts_epts }} ₽</div>
+                            </div>
+                        {% endif %}
+
+                        {% if card.payments.epsms %}
+                            <div class="row">
+                                <div class="col">ЭПСМС:</div>
+                                <div class="col text-end">{{ card.payments.epsms }} ₽</div>
+                            </div>
+                        {% endif %}
+                        {% if card.payments.excise %}
+                            <div class="row">
+                                <div class="col">Акциз:</div>
+                                <div class="col text-end">{{ card.payments.excise }} ₽</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if card.euro_links.all %}
+                        <div class="col-xxl m-2 bg-white rounded-3 pb-4">
+                            <div class="row">
+                                <div class="mb-4 row p-0 mb-0 mt-2 ms-0 justify-content-center align-items-center mt-1 border-bottom border-secondary-subtle">
+                                    <p class="col-auto fs-4 fw-bold">Cсылки на др. документы</p>
+                                </div>
+                                <div class="row">
+                                    {% for link in card.euro_links.all %}
+                                        <a href="{{ link.url }}">{{ link.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="upload-form" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h1>Загрузите квитанции</h1>
+                                    <form method="post" enctype="multipart/form-data"
+                                          action="{% url 'europe_card' card.id %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="formFileMultiple" class="form-label text-danger fs-8">Не
+                                                более 8 файлов или фото</label>
+                                            <input class="form-control" type="file" id="formFileMultiple"
+                                                   name="file">
+                                        </div>
+                                        <button class="btn upload_button fw-bold form-control">Загрузить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+    <script type="text/javascript">
+        let fileInput = document.getElementById('formFileMultiple');
+        const num = document.getElementById('documentFile').getElementsByTagName('img').length - 1;
+
+        let button = document.getElementById("submitForm");
+        fileInput.addEventListener('change', event => {
+                const files = event.target.files;
+
+                if (files.length >0) {
+                    button.style.display='block'
+                }
+                if (files.length < 1) {
+                    button.style.display='none'
+                }
+                if (files.length + num > 8) {
+                    alert('Максимальное кол-во файлов 8');
+                    return;
+                }
+
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].type !== 'image/jpg' && files[i].type !== 'image/jpeg' && files[i].type !== 'image/png' && files[i].type !== 'application/pdf') {
+                        event.preventDefault();
+                        fileInput.value = null
+
+                        alert(`Файл неверного формата`);
+                        return false;
+                    }
+                    if (files[i].size > 1024 * 1024 * 5) {
+                        event.preventDefault();
+                        fileInput.value = null
+
+                        alert(`Файл более 5 Мб`);
+                        return false;
+                    }
+                }
+            }
+        );
+
+    </script>
+{% endblock %}

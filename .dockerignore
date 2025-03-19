@@ -1,0 +1,17 @@
+docker-compose.yml
+docker-compose.prod.yml
+Dockerfile
+.docker
+.docker_data/
+README.md
+.gitignore
+
+.vscode/
+.idea/
+
+venv/
+.venv/
+env/
+temp/
+
+.git

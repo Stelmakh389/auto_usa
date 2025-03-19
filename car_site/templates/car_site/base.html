@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<head>
+    {% load django_bootstrap5 %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}America Car Trans{% endblock %}</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="container-fluid navbar navbar-expand-lg w-100 ps-2 pe-2 pt-0 pb-0 justify-content-center">
+    <div class="row w-100 justify-content-between align-items-center">
+        <div class="col-auto">
+            <div class="row">
+                <img class="logo col-auto" src="{% static 'img/logo.svg' %}" alt="logo">
+                <div class="col-auto dropdown align-items-center">
+                    <div class="row align-items-center">
+                        <a class="btn dropdown-toggle link-razdel" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            {% if request.resolver_match.url_name ==  'usa_list' or request.resolver_match.url_name ==  'usa_payment_list' or request.resolver_match.url_name ==  'usa_card' %}
+                                США
+                            {% elif request.resolver_match.url_name ==  'europe_list' or request.resolver_match.url_name ==  'europe_card' or request.resolver_match.url_name ==  'europe_payment_list' %}
+                                Европа
+                            {% elif request.resolver_match.url_name ==  'korea_list' or request.resolver_match.url_name ==  'korea_card' or request.resolver_match.url_name ==  'korea_payment_list' %}
+                                Корея
+                            {% else %}
+                                США
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'usa_list' %}">США</a></li>
+                            <li><a class="dropdown-item" href="{% url 'europe_list' %}">Европа</a></li>
+                            <li><a class="dropdown-item" href="{% url 'korea_list' %}">Корея</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="col-auto navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 pd">
+                        {% if request.resolver_match.url_name ==  'usa_list' or request.resolver_match.url_name ==  'usa_payment_list' or request.resolver_match.url_name ==  'usa_card' %}
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'usa_list' %}active{% endif %}" href="{% url 'usa_list' %}">Главная</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'usa_payment_list' %}active{% endif %}" aria-current="page"
+                                   href="{% url 'usa_payment_list' %}">Платежи</a>
+
+                            </li>
+                        {% elif request.resolver_match.url_name ==  'europe_list' or request.resolver_match.url_name ==  'europe_payment_list' or request.resolver_match.url_name ==  'europe_card' %}
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'europe_list' %}active{% endif %}"
+                                   href="{% url 'europe_list' %}">Главная</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'europe_payment_list' %}active{% endif %}" aria-current="page"
+                                   href="{% url 'europe_payment_list' %}">Платежи</a>
+
+                            </li>
+                        {% elif request.resolver_match.url_name ==  'korea_list' or request.resolver_match.url_name ==  'korea_payment_list' or request.resolver_match.url_name ==  'korea_card' %}
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'korea_list' %}active{% endif %}"
+                                   href="{% url 'korea_list' %}">Главная</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'korea_payment_list' %}active{% endif %}" aria-current="page"
+                                   href="{% url 'korea_payment_list' %}">Платежи</a>
+
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light" href="{% url 'usa_list' %}">Главная</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="link-menu nav-link text-light" aria-current="page"
+                                   href="{% url 'usa_payment_list' %}">Платежи</a>
+
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="link-menu nav-link text-light {% if request.resolver_match.url_name ==  'calculator' %}active{% endif %}" href="{% url 'calculator' %}">Калькулятор</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="col-auto h-100">
+            <div class="row h-100">
+                <a href="{% url 'balance' %}" class="col-auto balance">
+                    <div class="row h-100 align-items-center">
+                        <img class="col-auto wallet" src="{% static 'img/wallet.svg' %}" alt="wallet">
+                        <p class="col-auto text-balance">{{ user.balance }}</p>
+                        <p class="col-auto type_of_valute text-light">USD</p>
+                    </div>
+                </a>
+                <div class="profile col pd">
+                    <div class="row h-100 align-items-center justify-content-center">
+                        <p class="login text-light">{{ user.get_username }}</p>
+                        <form action="{% url 'logout' %}" method="post" class="exit">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-link exit text-light" type="submit">Выйти</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+{% block content %}
+
+{% endblock %}
+
+</body>
+</html>
