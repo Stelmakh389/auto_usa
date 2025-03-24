@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny  # Импортируем AllowAny
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from ..models import Auction, Location, Port
 from .serializers import AuctionSerializer, LocationSerializer, PortSerializer
@@ -12,9 +12,9 @@ class PortViewSet(viewsets.ModelViewSet):
     serializer_class = PortSerializer
 
     def get_permissions(self):
-        if self.action == 'create':  # Метод POST
-            return [IsAuthenticated()]  # Требуем авторизацию для создания
-        return [AllowAny()]  # Для остальных действий разрешаем доступ всем
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdminUser()]  # Только администраторы могут создавать, обновлять и удалять
+        return [AllowAny()]  # Для GET запросов разрешаем доступ всем
 
 
 class AuctionViewSet(viewsets.ModelViewSet):
@@ -23,9 +23,9 @@ class AuctionViewSet(viewsets.ModelViewSet):
     serializer_class = AuctionSerializer
 
     def get_permissions(self):
-        if self.action == 'create':  # Метод POST
-            return [IsAuthenticated()]  # Требуем авторизацию для создания
-        return [AllowAny()]  # Для остальных действий разрешаем доступ всем
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'toggle_active']:
+            return [IsAdminUser()]  # Только администраторы могут создавать, обновлять и удалять
+        return [AllowAny()]  # Для GET запросов разрешаем доступ всем
 
     @action(detail=True, methods=['post'])
     def toggle_active(self, request, pk=None):
@@ -38,13 +38,13 @@ class AuctionViewSet(viewsets.ModelViewSet):
 
 class LocationViewSet(viewsets.ModelViewSet):
     """API для управления локациями"""
-    queryset = Location.objects.all()  # Убедитесь, что это определено
+    queryset = Location.objects.all()
     serializer_class = LocationSerializer
 
     def get_permissions(self):
-        if self.action == 'create':  # Метод POST
-            return [IsAuthenticated()]  # Требуем авторизацию для создания
-        return [AllowAny()]  # Для остальных действий разрешаем доступ всем
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdminUser()]  # Только администраторы могут создавать, обновлять и удалять
+        return [AllowAny()]  # Для GET запросов разрешаем доступ всем
 
     def get_queryset(self):
         """Фильтрация по типу аукциона"""

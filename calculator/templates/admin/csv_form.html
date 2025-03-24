@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ title }}</h1>
+            <div class="alert alert-info" role="alert">
+                <p>Загрузите CSV файл для импорта данных.</p>
+                <ul>
+                {% if opts.model_name == 'port' %}
+                    <li><strong>Формат CSV для портов:</strong> Название порта</li>
+                    <li><strong>Пример:</strong> Одесса</li>
+                {% elif opts.model_name == 'auction' %}
+                    <li><strong>Формат CSV для аукционов:</strong> Название аукциона, Тип аукциона, Активный (да/нет)</li>
+                    <li><strong>Пример:</strong> New York, copart, да</li>
+                    <li><strong>Допустимые типы аукциона:</strong> copart, sublot_copart, iaa, sublot_iaa, manheim</li>
+                {% elif opts.model_name == 'location' %}
+                    <li><strong>Формат CSV для локаций:</strong> Название аукциона, Название локации, Стоимость доставки, Название порта, Активный (да/нет)</li>
+                    <li><strong>Пример:</strong> New York, Brooklyn, 1500.00, Одесса, да</li>
+                    <li><strong>Примечание:</strong> Аукцион и порт должны существовать в системе</li>
+                {% endif %}
+                </ul>
+                <p><strong>Обратите внимание:</strong> Первая строка (заголовок) будет пропущена</p>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary">Импортировать</button>
+                <a href="../" class="btn btn-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
