@@ -21,6 +21,8 @@ services:
       - ./static:/app/static
     depends_on:
       - postgres
+    ports:
+      - "8000:8000"
 
   postgres:
     container_name: postgres
@@ -38,24 +40,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  nginx:
-    container_name: app_nginx
-    image: nginx:1.21
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-      - ./static:/app/static
-    depends_on:
-      - app
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot

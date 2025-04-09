@@ -156,7 +156,7 @@ class UsaTracking(models.Model):
     delivery_storage_date = models.DateField(verbose_name='Дата доставки на склад', default=None, null=True, blank=True)
     container_load_date = models.DateField(verbose_name='Дата загрузки в контейнер', default=None, null=True, blank=True)
 
-    arrival_date_litva = models.DateField(verbose_name='Дата прибытия в Литву', default=None, null=True, blank=True)
+    arrival_date_litva = models.DateField(verbose_name='Дата прибытия в Турцию', default=None, null=True, blank=True)
     open_container_date = models.DateField(verbose_name='Дата открытия контейнера', default=None, null=True, blank=True)
     belarus_date = models.DateField(verbose_name='Дата доставки в Беларусь', default=None, null=True, blank=True)
     moscow_date = models.DateField(verbose_name='Дата доставки в Москву', default=None, null=True, blank=True)
