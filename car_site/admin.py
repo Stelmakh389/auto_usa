@@ -6,7 +6,7 @@ from .models import UsaCard, AdvUser, KoreaCard, EuropeCard, UsaPhoto, UsaPaymen
     UsaExtraLink, AuctionData, UsaPayment, UsaTracking, EuropePhoto, EuropeBelarusPhoto, EuropePaymentFile, \
     EuropeExtraLink, EuroPayment, EuroPlatform, EuropeTracking, EuropeCustomDocument, KoreaCustomDocument, KoreaPayment, \
     KoreaExtraLink, KoreaPaymentFile, KoreaTKPhoto, KoreaPhoto, UsaMoscowPhoto, UsaBelarusPhoto, UsaTakenPhoto, \
-    UsaOpenPhoto, UsaAllowedCombination
+    UsaOpenPhoto
 
 admin.site.site_url = '/card/usa'
 admin.site.site_header = 'America Car Trans'
@@ -53,14 +53,14 @@ class AllowedCombinationAdmin(admin.ModelAdmin):
     list_display = ['auction', 'platform']
 
 
-admin.site.register(UsaAllowedCombination, AllowedCombinationAdmin)
+#admin.site.register(UsaAllowedCombination, AllowedCombinationAdmin)
 
 
 class AuctionDataAdmin(admin.ModelAdmin):
     form = AuctionDataForm
 
 
-admin.site.register(AuctionData, AuctionDataAdmin)
+#admin.site.register(AuctionData, AuctionDataAdmin)
 
 
 class UserBalanceAdmin(admin.ModelAdmin):
