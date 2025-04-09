@@ -3,7 +3,8 @@ import json
 from django import forms
 from django.forms import Media, widgets
 
-from car_site.models import UsaPaymentFile, EuropePaymentFile, KoreaPaymentFile, AuctionData, UsaPlatform
+from calculator.models import Location
+from car_site.models import UsaPaymentFile, EuropePaymentFile, KoreaPaymentFile, AuctionData
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -105,7 +106,7 @@ class AuctionDataForm(forms.ModelForm):
         fields = "__all__"
 
     platform = RestrictedModelChoiceField(
-        UsaPlatform.objects.all(),
+        Location.objects.filter(is_active=True),
         restrict_on_form_field="auction",
-        restrict_on_relation="usaallowedcombination__auction",
+        restrict_on_relation="auction",
     )
