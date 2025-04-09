@@ -6,7 +6,7 @@ from .models import UsaCard, AdvUser, KoreaCard, EuropeCard, UsaPhoto, UsaPaymen
     UsaExtraLink, AuctionData, UsaPayment, UsaTracking, EuropePhoto, EuropeBelarusPhoto, EuropePaymentFile, \
     EuropeExtraLink, EuroPayment, EuroPlatform, EuropeTracking, EuropeCustomDocument, KoreaCustomDocument, KoreaPayment, \
     KoreaExtraLink, KoreaPaymentFile, KoreaTKPhoto, KoreaPhoto, UsaMoscowPhoto, UsaBelarusPhoto, UsaTakenPhoto, \
-    UsaOpenPhoto
+    UsaOpenPhoto, UsaAllowedCombination
 
 admin.site.site_url = '/card/usa'
 admin.site.site_header = 'America Car Trans'
@@ -41,10 +41,6 @@ class AdvUserAdmin(admin.ModelAdmin):
 admin.site.register(AdvUser, AdvUserAdmin)
 
 
-# admin.site.register(UsaAuction)
-# admin.site.register(UsaPlatform)
-
-
 class UsaAuctionDataInline(admin.TabularInline):
     model = AuctionData
     form = AuctionDataForm
@@ -57,14 +53,14 @@ class AllowedCombinationAdmin(admin.ModelAdmin):
     list_display = ['auction', 'platform']
 
 
-# admin.site.register(UsaAllowedCombination, AllowedCombinationAdmin)
+admin.site.register(UsaAllowedCombination, AllowedCombinationAdmin)
 
 
 class AuctionDataAdmin(admin.ModelAdmin):
     form = AuctionDataForm
 
 
-# admin.site.register(AuctionData, AuctionDataAdmin)
+admin.site.register(AuctionData, AuctionDataAdmin)
 
 
 class UserBalanceAdmin(admin.ModelAdmin):

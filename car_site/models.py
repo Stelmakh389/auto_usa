@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from calculator.models import Auction, Location
 
 from .utils.extensions import PORT_USA_CHOICES, COUNTRY_CHOICES, CAR_CHOICES, ENGINE_CHOICES, CAPACITY_CHOICES, \
     AGE_CHOICES, CNT_AUTO_CHOICES, QUADRUPOLE_CHOICES, MOTO_CHOICES, MASS_CHOICES, EURO_CAR_CHOICES, EURO_ENGINE_CHOICES
@@ -24,21 +25,6 @@ def get_file_type(file):
         return 'photo'
 
 
-class UsaAuction(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Аукцион')
-
-    def __str__(self):
-        return self.name
-
-
-class UsaPlatform(models.Model):
-    auction = models.ForeignKey(UsaAuction, on_delete=models.CASCADE, verbose_name='Аукцион')
-    name = models.CharField(max_length=200, verbose_name='Площадка')
-
-    def __str__(self):
-        return self.name
-
-
 class AuctionData(models.Model):
     card = models.OneToOneField("UsaCard", on_delete=models.CASCADE, verbose_name='Карточка',
                                 related_name='auction_data')
@@ -50,9 +36,9 @@ class AuctionData(models.Model):
     container_number = models.CharField(max_length=100, blank=True, verbose_name='Номер контейнера')
     container_link = models.CharField(max_length=100, blank=True, verbose_name='Ссылка на контейнер')
 
-    auction = models.ForeignKey(UsaAuction, on_delete=models.CASCADE, verbose_name='Аукцион', related_name='auctions')
-    platform = models.ForeignKey("UsaPlatform", on_delete=models.CASCADE, verbose_name='Площадка',
-                                 related_name='platforms')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, verbose_name='Аукцион', related_name='car_auctions')
+    platform = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name='Площадка',
+                                 related_name='car_platforms')
 
     def __str__(self):
         return f'{self.auction} - {self.platform}'
@@ -63,8 +49,8 @@ class AuctionData(models.Model):
 
 
 class UsaAllowedCombination(models.Model):
-    auction = models.ForeignKey(UsaAuction, on_delete=models.CASCADE, verbose_name='Аукцион')
-    platform = models.ForeignKey(UsaPlatform, on_delete=models.CASCADE, verbose_name='Площадка')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, verbose_name='Аукцион')
+    platform = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name='Площадка')
 
     def __str__(self):
         return f'{self.auction} - {self.platform}'
@@ -156,7 +142,7 @@ class UsaTracking(models.Model):
     delivery_storage_date = models.DateField(verbose_name='Дата доставки на склад', default=None, null=True, blank=True)
     container_load_date = models.DateField(verbose_name='Дата загрузки в контейнер', default=None, null=True, blank=True)
 
-    arrival_date_litva = models.DateField(verbose_name='Дата прибытия в Литву', default=None, null=True, blank=True)
+    arrival_date_litva = models.DateField(verbose_name='Дата прибытия в Турцию', default=None, null=True, blank=True)
     open_container_date = models.DateField(verbose_name='Дата открытия контейнера', default=None, null=True, blank=True)
     belarus_date = models.DateField(verbose_name='Дата доставки в Беларусь', default=None, null=True, blank=True)
     moscow_date = models.DateField(verbose_name='Дата доставки в Москву', default=None, null=True, blank=True)
